@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home System</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Retro Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #f4ecd8; /* Giấy cũ / sepia nhạt */
+            --header-bg: #4a3b32; /* Nâu cổ điển */
+            --card-bg: #fffbf0;
+            --text-main: #3e2723;
+            --accent: #8d6e63;
+        }
+
+        body {
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            font-family: 'Courier Prime', monospace; /* Phông chữ đánh máy vintage */
+            display: flex;
+            flex-direction: row; /* Bố cục ngang: Sidebar bên trái, Nội dung bên phải */
+        }
+
+        /* Sidebar / Thanh panel dọc bên trái kiểu cổ điển */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            height: 100vh;
+            background-color: var(--header-bg);
+            color: #ebd9c8;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            flex-shrink: 0;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.3);
+            border-right: 3px solid #3e2723;
+            box-sizing: border-box;
+            z-index: 100;
+        }
+
+        .sidebar-brand {
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px dashed rgba(235, 217, 200, 0.25);
+            text-align: center;
+        }
+
+        .sidebar-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.45rem;
+            font-weight: bold;
+            margin: 0;
+            letter-spacing: 1.5px;
+            color: #fffbf0;
+            line-height: 1.2;
+        }
+
+        .sidebar-subtitle {
+            font-size: 0.78rem;
+            color: #ffcc80;
+            margin-top: 6px;
+            letter-spacing: 1px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .nav-link {
+            color: #d7ccc8;
+            cursor: pointer;
+            padding: 12px 14px;
+            text-decoration: none;
+            transition: 0.25s;
+            font-weight: bold;
+            border-radius: 6px;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 4px solid #d7ccc8;
+        }
+
+        .nav-link.active {
+            color: #fff;
+            background: #d84315;
+            border-left: 4px solid #ffcc80;
+            box-shadow: 3px 3px 0px #bf360c;
+        }
+
+        .nav-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            color: currentColor;
+        }
+
+        .nav-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-link:hover .nav-icon svg {
+            transform: scale(1.15);
+        }
+
+        .user-section {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 2px dashed rgba(235, 217, 200, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .user-badge {
+            font-size: 0.85rem;
+            color: #ffcc80;
+            font-weight: bold;
+            line-height: 1.4;
+            word-break: break-word;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 204, 128, 0.2);
+            text-align: center;
+        }
+
+        .btn-logout {
+            background: #d84315;
+            color: #fff;
+            border: 1px solid #bf360c;
+            padding: 8px 12px;
+            font-size: 0.88rem;
+            cursor: pointer;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            border-radius: 6px;
+            width: 100%;
+            transition: 0.2s;
+            text-align: center;
+            box-shadow: 2px 2px 0px #bf360c;
+        }
+        .btn-logout:hover {
+            background: #bf360c;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            height: 100vh;
+            padding: 20px 24px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* --- CÁC TRANG (TABS) --- */
+        .page-view {
+            display: none;
+            height: 100%;
+            width: 100%;
+        }
+        .page-view.active {
+            display: flex;
+        }
+
+        /* --- Trang Dashboard --- */
+        #page-dashboard {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .top-cards {
+            display: flex;
+            gap: 20px;
+            height: 125px;
+            min-height: 110px;
+            flex-shrink: 0;
+        }
+
+        .v-card {
+            flex: 1;
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 4px 4px 0px var(--accent); /* Đổ bóng cứng kiểu retro */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .v-card h5 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--header-bg);
+        }
+        .v-card .value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #d84315; /* Cam đỏ retro */
+        }
+
+        .bottom-area {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            min-height: 380px;
+        }
+
+        .chart-box {
+            flex: 2;
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 4px 4px 0px var(--accent);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .device-card {
+            flex: 1;
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 4px 4px 0px var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .device-card span {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* Công tắc Retro */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 4px;
+            border: 2px solid #3e2723;
+        }
+        .slider:before {
+            position: absolute; content: "";
+            height: 16px; width: 16px;
+            left: 3px; bottom: 3px;
+            background-color: #3e2723;
+            transition: .4s;
+            border-radius: 2px;
+        }
+        input:checked + .slider { background-color: #d84315; }
+        input:checked + .slider:before {
+            transform: translateX(24px);
+            background-color: #fff;
+        }
+
+        /* --- Bảng dữ liệu Vintage --- */
+        #page-data, #page-history, #page-profile {
+            flex-direction: column;
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 4px 4px 0px var(--accent);
+            padding: 20px;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .retro-input {
+            background: var(--bg-color);
+            border: 2px solid var(--accent);
+            padding: 6px 12px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            outline: none;
+        }
+        .retro-input:focus {
+            border-color: #d84315;
+        }
+
+        .table-wrapper {
+            flex-grow: 1;
+            overflow-y: auto;
+            border: 1px solid #d7ccc8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--header-bg);
+            color: #ebd9c8;
+            padding: 10px;
+            position: sticky;
+            top: 0;
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 1px;
+            cursor: pointer;
+        }
+        th:hover {
+            color: #fff;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #d7ccc8;
+            border-right: 1px solid #d7ccc8;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fbe9e7;
+        }
+
+        /* Phân trang (Pagination) */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+            gap: 5px;
+        }
+        .page-btn {
+            background: var(--bg-color);
+            border: 2px solid var(--accent);
+            padding: 5px 12px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Courier Prime', monospace;
+        }
+        .page-btn:hover { background: #d7ccc8; }
+
+        /* --- GIAO DIỆN PROFILE (UC6) --- */
+        .profile-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fffdf8;
+            border: 2px solid var(--accent);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 4px 4px 0px var(--accent);
+        }
+        .profile-field {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .profile-field label {
+            font-weight: bold;
+            color: var(--header-bg);
+        }
+
+        /* --- MÀN HÌNH ĐĂNG NHẬP (UC1 - LOGIN OVERLAY) --- */
+        #login-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(74, 59, 50, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            border: 3px solid #3e2723;
+            border-radius: 10px;
+            box-shadow: 8px 8px 0px #3e2723;
+            padding: 35px 30px;
+            width: 380px;
+            text-align: center;
+        }
+
+        .login-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            color: #3e2723;
+            margin-bottom: 10px;
+        }
+
+        .login-card p {
+            font-size: 0.9rem;
+            color: #6d4c41;
+            margin-bottom: 25px;
+        }
+
+        .login-form-group {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+
+        .login-form-group label {
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #3e2723;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .login-form-group input {
+            width: 100%;
+            background: var(--bg-color);
+            border: 2px solid var(--accent);
+            padding: 8px 12px;
+            font-family: 'Courier Prime', monospace;
+            font-size: 1rem;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .login-form-group input:focus {
+            border-color: #d84315;
+        }
+
+        .btn-login {
+            width: 100%;
+            background: #d84315;
+            color: #fff;
+            border: 2px solid #bf360c;
+            padding: 10px;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #bf360c;
+            margin-top: 10px;
+            transition: 0.2s;
+        }
+        .btn-login:hover {
+            background: #bf360c;
+        }
+
+        .login-hint {
+            margin-top: 15px;
+            font-size: 0.82rem;
+            color: #8d6e63;
+            background: #efebe9;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px dashed #a1887f;
+        }
+
+        .alert-box {
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.88rem;
+            font-weight: bold;
+            display: none;
+        }
+        .alert-danger { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+        .alert-success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    </style>
+</head>
+<body>
+
+    <!-- MÀN HÌNH ĐĂNG NHẬP (UC1) -->
+    <div id="login-overlay">
+        <div class="login-card">
+            <h2>ĐĂNG NHẬP</h2>
+            <p>Hệ thống Giám sát & Điều khiển Smart Home</p>
+
+            <div id="login-error" class="alert-box alert-danger"></div>
+
+            <form onsubmit="handleLogin(event)">
+                <div class="login-form-group">
+                    <label>Tên đăng nhập (Username)</label>
+                    <input type="text" id="login-username" value="admin" required autofocus>
+                </div>
+                <div class="login-form-group">
+                    <label>Mật khẩu (Password)</label>
+                    <input type="password" id="login-password" value="123456" required>
+                </div>
+                <button type="submit" class="btn-login">XÁC THỰC (LOGIN)</button>
+            </form>
+
+            <div class="login-hint">
+                Tài khoản mặc định: <b>admin</b> / Mật khẩu: <b>123456</b>
+            </div>
+        </div>
+    </div>
+
+    <!-- THANH PANEL DỌC BÊN TRÁI (SIDEBAR) -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffcc80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 6px;">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <h1 class="sidebar-title">Smart Home</h1>
+            <div class="sidebar-subtitle">Hệ thống IoT</div>
+        </div>
+        <nav class="nav-links">
+            <a class="nav-link active" id="nav-dashboard" onclick="switchTab('dashboard')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </span>
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-link" id="nav-data" onclick="switchTab('data')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
+                    </svg>
+                </span>
+                <span>Lịch sử Cảm biến</span>
+            </a>
+            <a class="nav-link" id="nav-history" onclick="switchTab('history')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </span>
+                <span>Lịch sử Bật Tắt</span>
+            </a>
+            <a class="nav-link" id="nav-profile" onclick="switchTab('profile')">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </span>
+                <span>Hồ sơ cá nhân</span>
+            </a>
+        </nav>
+        <div class="user-section">
+            <div class="user-badge" id="current-user-badge">Nguyễn Đức Tài (Admin)</div>
+            <button class="btn-logout" onclick="handleLogout()">Đăng xuất</button>
+        </div>
+    </aside>
+
+    <div class="main-content">
+        <!-- 1. DASHBOARD (UC2, UC3) -->
+        <div id="page-dashboard" class="page-view active">
+            <div class="top-cards">
+                <div class="v-card">
+                    <h5>Nhiệt độ</h5>
+                    <div class="value" id="val-temp">-- °C</div>
+                </div>
+                <div class="v-card">
+                    <h5>Độ ẩm</h5>
+                    <div class="value" id="val-humi" style="color: #0277bd;">-- %</div>
+                </div>
+                <div class="v-card">
+                    <h5>Độ sáng</h5>
+                    <div class="value" id="val-light" style="color: #f57f17;">-- lux</div>
+                </div>
+            </div>
+            
+            <div class="bottom-area">
+                <div class="chart-box">
+                    <h5 style="font-family: 'Playfair Display';">Biểu đồ thời gian thực</h5>
+                    <div style="flex: 1; position: relative; width: 100%;">
+                        <canvas id="sensorChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="control-box">
+                    <div class="device-card">
+                        <span>Quạt (Phòng Khách)</span>
+                        <label class="switch">
+                            <input type="checkbox" id="dev-FAN_01" onchange="toggleDevice('FAN_01', this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-card">
+                        <span>Đèn 1 (Phòng Khách)</span>
+                        <label class="switch">
+                            <input type="checkbox" id="dev-LED_01" onchange="toggleDevice('LED_01', this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="device-card">
+                        <span>Đèn 2 (Phòng Ngủ)</span>
+                        <label class="switch">
+                            <input type="checkbox" id="dev-LED_02" onchange="toggleDevice('LED_02', this)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. DATA SENSOR (UC4) -->
+        <div id="page-data" class="page-view">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+                <div>
+                    <h3 style="font-family: 'Playfair Display', serif; font-weight: 700; margin: 0; font-size: 1.65rem; color: #3e2723;">Lịch sử Cảm biến</h3>
+                    <div style="font-size: 0.85rem; color: #795548; margin-top: 4px;">Thứ Năm, 3 tháng 9, 2026</div>
+                </div>
+                <div>
+                    <span style="background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; padding: 6px 14px; border-radius: 20px; font-weight: 600; font-size: 0.85rem; display: inline-flex; align-items: center; gap: 6px;">
+                        <span style="width: 8px; height: 8px; background: #2e7d32; border-radius: 50%; display: inline-block;"></span> Đã kết nối
+                    </span>
+                </div>
+            </div>
+
+            <!-- Card Box chứa bảng và bộ lọc khớp ảnh Figma -->
+            <div style="background: #fffdf9; border: 1px solid #d7ccc8; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 700; font-size: 1.15rem; color: #3e2723;">Lịch sử Cảm biến</div>
+                    <div style="font-size: 0.85rem; color: #8d6e63; margin-top: 2px;">Dữ liệu đọc từ các cảm biến nhiệt độ, độ ẩm và ánh sáng</div>
+                </div>
+
+                <!-- Filter Bar 3 thành phần theo mẫu Figma -->
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; background: #fdfbf7; padding: 12px 14px; border-radius: 8px; border: 1px solid #efebe9;">
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 0.85rem; color: #5d4037; font-weight: 600;">🌪 Loại cảm biến:</span>
+                        <select class="retro-input" id="filter-sensor-type" onchange="fetchDataSensor(1)" style="padding: 7px 10px; border-radius: 6px; border: 1px solid #bcaaa4; background: #fff; font-size: 0.88rem;">
+                            <option value="all">Tất cả cảm biến</option>
+                            <option value="temperature">Cảm biến Nhiệt độ DHT11</option>
+                            <option value="humidity">Cảm biến Độ ẩm DHT11</option>
+                            <option value="light">Cảm biến Ánh sáng LDR 4-pin</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 0.85rem; color: #5d4037; font-weight: 600;">Giá trị:</span>
+                        <input type="text" class="retro-input" id="filter-sensor-value" placeholder="Ví dụ: 25.5 hoặc >30" style="width: 175px; padding: 7px 10px; border-radius: 6px; border: 1px solid #bcaaa4; background: #fff; font-size: 0.88rem;">
+                    </div>
+
+                    <div style="display: flex; align-items: center; gap: 6px;">
+                        <span style="font-size: 0.85rem; color: #5d4037; font-weight: 600;">⏱ Thời gian:</span>
+                        <input type="text" class="retro-input" id="filter-sensor-time" placeholder="Ví dụ: 26/08/2026 hoặc 22:56" style="width: 210px; padding: 7px 10px; border-radius: 6px; border: 1px solid #bcaaa4; background: #fff; font-size: 0.88rem;">
+                    </div>
+
+                    <button class="page-btn" onclick="fetchDataSensor(1)" style="padding: 7px 18px; border-radius: 6px; background: #3e2723; color: #fff; font-weight: 600;">Tìm kiếm</button>
+                    <button class="page-btn" onclick="resetSensorFilter()" style="padding: 7px 12px; border-radius: 6px; background: #d7ccc8; color: #3e2723;">Đặt lại</button>
+                </div>
+
+                <div class="table-wrapper" style="border: 1px solid #e0d7c6; border-radius: 8px; overflow: hidden;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f7f3ea; border-bottom: 2px solid #d7ccc8; color: #5d4037; font-size: 0.82rem; letter-spacing: 0.5px;">
+                                <th style="padding: 12px 14px; text-align: left; width: 100px;" onclick="sortData('id')">ID ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left;" onclick="sortData('sensorName')">TÊN CẢM BIẾN ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; width: 180px;" onclick="sortData('value')">GIÁ TRỊ ĐO ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; width: 220px;" onclick="sortData('recordedAt')">THỜI GIAN THU THẬP ⬍</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-data">
+                            <!-- Dữ liệu render từ JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer phân trang chuẩn Figma -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; flex-wrap: wrap; gap: 10px;">
+                    <div id="info-sensor-pag" style="font-size: 0.88rem; color: #795548; font-weight: 500;">
+                        Hiển thị 1-8 / 36 bản ghi
+                    </div>
+                    <div class="pagination" id="pag-data" style="margin: 0;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. ACTIVE HISTORY (UC5) -->
+        <div id="page-history" class="page-view">
+            <h4 style="font-family: 'Playfair Display'; font-weight: bold; margin-bottom: 12px;">Lịch sử hoạt động thiết bị (Action History - UC5)</h4>
+            
+            <div style="background: #fffdf9; border: 1px solid #d7ccc8; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
+                <div class="toolbar" style="margin-bottom: 16px;">
+                    <select class="retro-input" id="search-hist-col" style="border-radius: 6px; padding: 7px 10px;">
+                        <option value="all">-- Lọc (Filter): Tất cả --</option>
+                        <option value="device">Mã / Tên thiết bị</option>
+                        <option value="action">Action (Hành động)</option>
+                        <option value="status">Status (Trạng thái)</option>
+                        <option value="time">Time (Thời gian)</option>
+                    </select>
+                    <input type="text" class="retro-input" id="search-hist-input" placeholder="Nhập từ khóa tìm kiếm..." style="width: 320px; border-radius: 6px; padding: 7px 10px;">
+                    <button class="page-btn" onclick="fetchActiveHistory(1)" style="border-radius: 6px; background: #3e2723; color: #fff; padding: 7px 18px;">Tìm kiếm (Search)</button>
+                </div>
+                <div class="table-wrapper" style="border: 1px solid #e0d7c6; border-radius: 8px; overflow: hidden;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f7f3ea; border-bottom: 2px solid #d7ccc8; color: #5d4037; font-size: 0.82rem; letter-spacing: 0.5px;">
+                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('deviceId')">ID THIẾT BỊ ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('deviceName')">DEVICE (TÊN THIẾT BỊ) ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('action')">ACTION ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('status')">STATUS ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('time')">TIME (GỬI LỆNH) ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('responseTime')">TIME PHẢN HỒI ⬍</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-hist">
+                            <!-- Dữ liệu render từ JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer phân trang chuẩn cho Active History -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; flex-wrap: wrap; gap: 10px;">
+                    <div id="info-hist-pag" style="font-size: 0.88rem; color: #795548; font-weight: 500;">
+                        Hiển thị 1-8 / 28 bản ghi
+                    </div>
+                    <div class="pagination" id="pag-hist" style="margin: 0;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. PROFILE (UC6) -->
+        <div id="page-profile" class="page-view" style="overflow-y: auto;">
+            <h4 style="font-family: 'Playfair Display'; font-weight: bold;">Hồ sơ cá nhân & Tài nguyên dự án (Profile - UC6)</h4>
+            
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 15px; width: 100%;">
+                <!-- Card 1: Thông tin cá nhân -->
+                <div class="profile-container" style="flex: 1; min-width: 340px; margin: 0;">
+                    <h5 style="font-family: 'Playfair Display'; font-weight: bold; border-bottom: 2px dashed #a1887f; padding-bottom: 8px;">Thông tin cá nhân</h5>
+                    <div id="profile-msg" class="alert-box alert-success"></div>
+
+                    <form onsubmit="handleUpdateProfile(event)">
+                        <div class="profile-field">
+                            <label>Tên đăng nhập (Username):</label>
+                            <input type="text" class="retro-input" id="profile-username" readonly style="background:#e0d7c6; cursor:not-allowed;">
+                        </div>
+                        <div class="profile-field">
+                            <label>Vai trò (Role):</label>
+                            <input type="text" class="retro-input" id="profile-role" readonly style="background:#e0d7c6; cursor:not-allowed;">
+                        </div>
+                        <div class="profile-field">
+                            <label>Họ và tên (Full Name):</label>
+                            <input type="text" class="retro-input" id="profile-fullname" required>
+                        </div>
+                        <div class="profile-field">
+                            <label>Email liên hệ:</label>
+                            <input type="email" class="retro-input" id="profile-email" required>
+                        </div>
+                        <button type="submit" class="page-btn" style="background:#d84315; color:#fff; width:100%; padding:10px; margin-top:10px;">
+                            LƯU THAY ĐỔI THÔNG TIN
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Card 2: Tài nguyên đồ án (Links theo yêu cầu phác thảo) -->
+                <div class="profile-container" style="flex: 1; min-width: 340px; margin: 0;">
+                    <h5 style="font-family: 'Playfair Display'; font-weight: bold; border-bottom: 2px dashed #a1887f; padding-bottom: 8px;">Liên kết tài nguyên dự án</h5>
+                    <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 15px;">
+                        <a href="https://github.com/taind345/IOT_B23DCAT266" target="_blank" class="page-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: space-between; padding: 12px 15px;">
+                            <span>📁 <b>GitHub Repository</b></span>
+                            <span style="font-size: 0.85rem; color: #6d4c41;">Source Code ➔</span>
+                        </a>
+                        <a href="https://www.figma.com/design/Rvp8ZF9YWmAVHasuFuoUUV/HTML-to-Figma--Community-?node-id=0-1&t=7ZkeueLaBrYHYakL-1" target="_blank" class="page-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: space-between; padding: 12px 15px;">
+                            <span>🎨 <b>Bản vẽ Figma UI/UX</b></span>
+                            <span style="font-size: 0.85rem; color: #6d4c41;">Prototype ➔</span>
+                        </a>
+                        <a href="/api-docs" target="_blank" class="page-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: space-between; padding: 12px 15px;">
+                            <span>📑 <b>Tài liệu Swagger / Postman</b></span>
+                            <span style="font-size: 0.85rem; color: #6d4c41;">API Docs ➔</span>
+                        </a>
+                        <a href="#" onclick="alert('File Báo cáo PDF đã được lưu trữ trong thư mục Bao_cao/'); return false;" class="page-btn" style="text-decoration: none; display: flex; align-items: center; justify-content: space-between; padding: 12px 15px;">
+                            <span>📕 <b>Báo cáo Bài tập lớn (PDF)</b></span>
+                            <span style="font-size: 0.85rem; color: #6d4c41;">Xem báo cáo ➔</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // --- QUẢN LÝ XÁC THỰC (UC1 - AUTH) ---
+        let currentAuthToken = localStorage.getItem('token') || '';
+        let currentUser = null;
+
+        function checkAuth() {
+            if (!currentAuthToken) {
+                document.getElementById('login-overlay').style.display = 'flex';
+            } else {
+                document.getElementById('login-overlay').style.display = 'none';
+                try {
+                    const savedUser = JSON.parse(localStorage.getItem('user'));
+                    if (savedUser) {
+                        currentUser = savedUser;
+                        document.getElementById('current-user-badge').innerText = `User: ${savedUser.fullName || savedUser.username} (${savedUser.role})`;
+                    }
+                } catch(e){}
+                fetchProfile();
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            const errBox = document.getElementById('login-error');
+            errBox.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                if (!res.ok || !data.success) {
+                    throw new Error(data.message || 'Đăng nhập thất bại');
+                }
+
+                currentAuthToken = data.token;
+                currentUser = data.user;
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+
+                document.getElementById('login-overlay').style.display = 'none';
+                document.getElementById('current-user-badge').innerText = `User: ${data.user.fullName || data.user.username} (${data.user.role})`;
+                
+                switchTab('dashboard');
+                fetchSensorData();
+            } catch (err) {
+                errBox.innerText = err.message;
+                errBox.style.display = 'block';
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            currentAuthToken = '';
+            currentUser = null;
+            document.getElementById('login-overlay').style.display = 'flex';
+        }
+
+        // --- QUẢN LÝ PROFILE (UC6) ---
+        async function fetchProfile() {
+            if (!currentAuthToken) return;
+            try {
+                const res = await fetch('/api/profile', {
+                    headers: { 'Authorization': `Bearer ${currentAuthToken}` }
+                });
+                const json = await res.json();
+                if (json.success && json.user) {
+                    const u = json.user;
+                    document.getElementById('profile-username').value = u.username;
+                    document.getElementById('profile-role').value = u.role.toUpperCase();
+                    document.getElementById('profile-fullname').value = u.fullName || '';
+                    document.getElementById('profile-email').value = u.email || '';
+                    document.getElementById('current-user-badge').innerText = `User: ${u.fullName || u.username} (${u.role})`;
+                } else if (res.status === 401 || res.status === 403) {
+                    handleLogout();
+                }
+            } catch(e) {}
+        }
+
+        async function handleUpdateProfile(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('profile-fullname').value.trim();
+            const email = document.getElementById('profile-email').value.trim();
+            const msgBox = document.getElementById('profile-msg');
+
+            try {
+                const res = await fetch('/api/profile', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentAuthToken}`
+                    },
+                    body: JSON.stringify({ fullName, email })
+                });
+                const json = await res.json();
+                if (!res.ok || !json.success) throw new Error(json.message);
+
+                msgBox.innerText = 'Cập nhật hồ sơ thành công!';
+                msgBox.style.display = 'block';
+                setTimeout(() => msgBox.style.display = 'none', 3000);
+                fetchProfile();
+            } catch (err) {
+                alert('Lỗi cập nhật hồ sơ: ' + err.message);
+            }
+        }
+
+        // --- CHUYỂN TAB ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+            
+            const targetPage = document.getElementById('page-' + tabId);
+            const targetNav = document.getElementById('nav-' + tabId);
+            if (targetPage) targetPage.classList.add('active');
+            if (targetNav) targetNav.classList.add('active');
+
+            if(tabId === 'dashboard' && typeof sensorChart !== 'undefined') {
+                setTimeout(() => sensorChart.resize(), 50);
+            }
+            if(tabId === 'data') fetchDataSensor();
+            if(tabId === 'history') fetchActiveHistory();
+            if(tabId === 'profile') fetchProfile();
+        }
+
+        // --- DASHBOARD LOGIC (UC2 & UC3) ---
+        async function toggleDevice(deviceCode, checkboxEl) {
+            const isChecked = checkboxEl.checked;
+            const action = isChecked ? "ON" : "OFF";
+            try {
+                const response = await fetch('/api/v1/devices/toggle', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${currentAuthToken}`
+                    },
+                    body: JSON.stringify({ deviceCode, action })
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) throw new Error(result.message);
+                console.log(`Đã gửi lệnh ${action} cho ${deviceCode}`);
+            } catch (error) {
+                alert('Lỗi điều khiển thiết bị: ' + error.message);
+                checkboxEl.checked = !isChecked; 
+            }
+        }
+
+        async function fetchSensorData() {
+            try {
+                const response = await fetch('/api/v1/sensors/data/latest');
+                if (!response.ok) return;
+                const result = await response.json();
+                if (result.success && result.data) {
+                    const data = result.data;
+                    document.getElementById('val-temp').innerText = `${data.temperature} °C`;
+                    document.getElementById('val-humi').innerText = `${data.humidity} %`;
+                    document.getElementById('val-light').innerText = `${data.lightLevel} lux`;
+                    updateChart(data);
+                }
+            } catch (e) {}
+        }
+
+        // --- CHART.JS KHỞI TẠO ---
+        const ctx = document.getElementById('sensorChart').getContext('2d');
+        const sensorChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [], 
+                datasets: [
+                    { label: 'Nhiệt độ (°C)', borderColor: '#d84315', backgroundColor: '#d84315', data: [], tension: 0.1, borderWidth: 3 },
+                    { label: 'Độ ẩm (%)', borderColor: '#0277bd', backgroundColor: '#0277bd', data: [], tension: 0.1, borderWidth: 3 },
+                    { label: 'Độ sáng (lux)', borderColor: '#f57f17', backgroundColor: '#f57f17', data: [], tension: 0.1, borderWidth: 3 }
+                ]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false, animation: false,
+                plugins: { legend: { labels: { font: { family: "'Courier Prime', monospace" } } } },
+                scales: {
+                    x: { ticks: { font: { family: "'Courier Prime', monospace" } } },
+                    y: { ticks: { font: { family: "'Courier Prime', monospace" } } }
+                }
+            }
+        });
+
+        function updateChart(data) {
+            const timeLabel = new Date().toLocaleTimeString();
+            sensorChart.data.labels.push(timeLabel);
+            sensorChart.data.datasets[0].data.push(data.temperature);
+            sensorChart.data.datasets[1].data.push(data.humidity);
+            sensorChart.data.datasets[2].data.push(data.lightLevel);
+            if (sensorChart.data.labels.length > 10) {
+                sensorChart.data.labels.shift();
+                sensorChart.data.datasets.forEach(d => d.data.shift());
+            }
+            sensorChart.update();
+        }
+
+        // --- DATA SENSOR LOGIC (UC4) - KHỚP CHUẨN FIGMA ---
+        let dataState = { page: 1, limit: 8, sortBy: 'id', sortOrder: 'ASC' };
+        
+        function sortData(col) {
+            if (dataState.sortBy === col) {
+                dataState.sortOrder = dataState.sortOrder === 'ASC' ? 'DESC' : 'ASC';
+            } else {
+                dataState.sortBy = col;
+                dataState.sortOrder = 'ASC';
+            }
+            fetchDataSensor(1);
+        }
+
+        function resetSensorFilter() {
+            const t = document.getElementById('filter-sensor-type');
+            const v = document.getElementById('filter-sensor-value');
+            const tm = document.getElementById('filter-sensor-time');
+            if (t) t.value = 'all';
+            if (v) v.value = '';
+            if (tm) tm.value = '';
+            fetchDataSensor(1);
+        }
+
+        async function fetchDataSensor(page = dataState.page) {
+            dataState.page = page;
+            const sensorType = document.getElementById('filter-sensor-type')?.value || 'all';
+            const keywordValue = document.getElementById('filter-sensor-value')?.value || '';
+            const keywordTime = document.getElementById('filter-sensor-time')?.value || '';
+            
+            const url = `/api/history/sensors?page=${page}&limit=${dataState.limit}&sensorType=${encodeURIComponent(sensorType)}&keywordValue=${encodeURIComponent(keywordValue)}&keywordTime=${encodeURIComponent(keywordTime)}&sortBy=${dataState.sortBy}&sortOrder=${dataState.sortOrder}`;
+            
+            try {
+                const res = await fetch(url);
+                const json = await res.json();
+                if (json.success) {
+                    const tbody = document.getElementById('table-data');
+                    tbody.innerHTML = '';
+                    if (!json.data || json.data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 25px; color: #8d6e63;">Không tìm thấy bản ghi cảm biến nào</td></tr>';
+                    } else {
+                        json.data.forEach(row => {
+                            const tr = document.createElement('tr');
+                            const dateObj = new Date(row.recordedAt);
+                            const timeStr = ('0' + dateObj.getDate()).slice(-2) + '/' + 
+                                            ('0' + (dateObj.getMonth() + 1)).slice(-2) + '/' + 
+                                            dateObj.getFullYear() + ' ' + 
+                                            ('0' + dateObj.getHours()).slice(-2) + ':' + 
+                                            ('0' + dateObj.getMinutes()).slice(-2);
+
+                            let valColor = '#d84315'; // Đỏ (Nhiệt độ)
+                            if (row.sensorType === 'humidity') valColor = '#0277bd'; // Xanh (Độ ẩm)
+                            else if (row.sensorType === 'light') valColor = '#e65100'; // Cam/Vàng (Ánh sáng)
+
+                            tr.innerHTML = `
+                                <td style="color: #9e9e9e; font-family: monospace; font-size: 0.92rem; padding: 12px 14px;">${row.displayId || ('#' + String(row.id).padStart(3, '0'))}</td>
+                                <td style="font-weight: 500; color: #3e2723; padding: 12px 14px;">${row.sensorName}</td>
+                                <td style="font-weight: 700; color: ${valColor}; padding: 12px 14px; font-size: 0.95rem;">${row.value} ${row.unit}</td>
+                                <td style="color: #616161; font-family: monospace; padding: 12px 14px;">${timeStr}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+
+                    // Cập nhật text Hiển thị 1-8 / 36 bản ghi
+                    const startItem = json.pagination.totalItems > 0 ? (json.pagination.currentPage - 1) * json.pagination.limit + 1 : 0;
+                    const endItem = Math.min(json.pagination.currentPage * json.pagination.limit, json.pagination.totalItems);
+                    const infoEl = document.getElementById('info-sensor-pag');
+                    if (infoEl) {
+                        infoEl.innerText = json.pagination.totalItems > 0 
+                            ? `Hiển thị ${startItem}-${endItem} / ${json.pagination.totalItems} bản ghi`
+                            : 'Không có bản ghi nào';
+                    }
+
+                    renderPaginationModern('pag-data', json.pagination, fetchDataSensor);
+                }
+            } catch (e) { console.log(e); }
+        }
+
+        // --- ACTIVE HISTORY LOGIC (UC5) ---
+        let histState = { page: 1, limit: 8, sortBy: 'id', sortOrder: 'DESC' };
+        
+        function sortHist(col) {
+            if (histState.sortBy === col) {
+                histState.sortOrder = histState.sortOrder === 'ASC' ? 'DESC' : 'ASC';
+            } else {
+                histState.sortBy = col;
+                histState.sortOrder = 'DESC';
+            }
+            fetchActiveHistory(1);
+        }
+
+        async function fetchActiveHistory(page = histState.page) {
+            histState.page = page;
+            const searchBy = document.getElementById('search-hist-col').value;
+            const keyword = document.getElementById('search-hist-input').value;
+            
+            const url = `/api/history/actions?page=${page}&limit=${histState.limit}&searchBy=${searchBy}&keyword=${encodeURIComponent(keyword)}&sortBy=${histState.sortBy}&sortOrder=${histState.sortOrder}`;
+            
+            try {
+                const res = await fetch(url);
+                const json = await res.json();
+                if (json.success) {
+                    const tbody = document.getElementById('table-hist');
+                    tbody.innerHTML = '';
+                    if (!json.data || json.data.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 25px; color: #8d6e63;">Chưa có lịch sử hoạt động nào</td></tr>';
+                    } else {
+                        json.data.forEach(row => {
+                            const tr = document.createElement('tr');
+                            const sendDate = new Date(row.time);
+                            const timeStr = ('0' + sendDate.getDate()).slice(-2) + '/' + 
+                                            ('0' + (sendDate.getMonth() + 1)).slice(-2) + '/' + 
+                                            sendDate.getFullYear() + ' ' + 
+                                            ('0' + sendDate.getHours()).slice(-2) + ':' + 
+                                            ('0' + sendDate.getMinutes()).slice(-2);
+                            
+                            const respDate = new Date(row.responseTime || row.time);
+                            const respTimeStr = ('0' + respDate.getDate()).slice(-2) + '/' + 
+                                                ('0' + (respDate.getMonth() + 1)).slice(-2) + '/' + 
+                                                respDate.getFullYear() + ' ' + 
+                                                ('0' + respDate.getHours()).slice(-2) + ':' + 
+                                                ('0' + respDate.getMinutes()).slice(-2);
+
+                            const actionBadge = row.action === 'ON' 
+                                ? `<span style="background: #2e7d32; color:#fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;">ON</span>`
+                                : `<span style="background: #c62828; color:#fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;">OFF</span>`;
+
+                            let statusBadge = '';
+                            if (row.status === 'ON') {
+                                statusBadge = `<span style="background: #2e7d32; color:#fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;">ON</span>`;
+                            } else if (row.status === 'OFF') {
+                                statusBadge = `<span style="background: #c62828; color:#fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;">OFF</span>`;
+                            } else {
+                                statusBadge = `<span style="background: #f57f17; color:#fff; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 0.85rem;">loading</span>`;
+                            }
+
+                            tr.innerHTML = `
+                                <td style="padding: 12px 14px;"><span style="font-family: monospace; font-weight: bold; background: #e0d7c6; padding: 2px 8px; border-radius: 4px; border: 1px solid #bcaaa4; color: #3e2723;">${row.deviceId || row.deviceCode || 'DEV'}</span></td>
+                                <td style="padding: 12px 14px;"><b>${row.deviceName}</b></td>
+                                <td style="padding: 12px 14px;">${actionBadge}</td>
+                                <td style="padding: 12px 14px;">${statusBadge}</td>
+                                <td style="padding: 12px 14px; font-family: monospace;">${timeStr}</td>
+                                <td style="padding: 12px 14px; font-family: monospace;">${respTimeStr}</td>
+                            `;
+                            tbody.appendChild(tr);
+                        });
+                    }
+
+                    // Cập nhật text Hiển thị 1-8 / 28 bản ghi
+                    const startItem = json.pagination.totalItems > 0 ? (json.pagination.currentPage - 1) * json.pagination.limit + 1 : 0;
+                    const endItem = Math.min(json.pagination.currentPage * json.pagination.limit, json.pagination.totalItems);
+                    const infoEl = document.getElementById('info-hist-pag');
+                    if (infoEl) {
+                        infoEl.innerText = json.pagination.totalItems > 0 
+                            ? `Hiển thị ${startItem}-${endItem} / ${json.pagination.totalItems} bản ghi`
+                            : 'Không có bản ghi nào';
+                    }
+
+                    renderPaginationModern('pag-hist', json.pagination, fetchActiveHistory);
+                } else {
+                    const tbody = document.getElementById('table-hist');
+                    if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 25px; color: #c62828;">${json.message || 'Lỗi tải dữ liệu'}</td></tr>`;
+                }
+            } catch (e) { console.log(e); }
+        }
+
+        // Helper Phân trang Hiện đại chuẩn Figma - Giới hạn tối đa 5 trang (< 1 2 3 4 5 >)
+        function renderPaginationModern(containerId, pagination, fetchFunc) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            if (!pagination || pagination.totalPages <= 0) return;
+
+            const cur = pagination.currentPage;
+            // Giới hạn tối đa 5 trang theo yêu cầu
+            const total = Math.min(pagination.totalPages, 5);
+
+            // Nút Prev (<)
+            const prevBtn = document.createElement('button');
+            prevBtn.className = 'page-btn';
+            prevBtn.innerHTML = '&lt;';
+            prevBtn.style.cssText = 'min-width: 32px; padding: 5px 11px; border-radius: 6px; border: 1px solid #d7ccc8; margin: 0 2px; font-size: 0.88rem;';
+            if (cur <= 1) {
+                prevBtn.disabled = true;
+                prevBtn.style.opacity = '0.4';
+                prevBtn.style.cursor = 'not-allowed';
+            } else {
+                prevBtn.onclick = () => fetchFunc(cur - 1);
+            }
+            container.appendChild(prevBtn);
+
+            // Các nút số trang (Tối đa 5 trang: 1, 2, 3, 4, 5)
+            for (let i = 1; i <= total; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'page-btn';
+                btn.innerText = i;
+                btn.style.cssText = 'min-width: 32px; padding: 5px 11px; border-radius: 6px; border: 1px solid #d7ccc8; margin: 0 2px; font-weight: 600; font-size: 0.88rem;';
+                if (i === cur) {
+                    btn.style.background = '#2563eb'; // Màu xanh nổi bật chuẩn Figma
+                    btn.style.color = '#fff';
+                    btn.style.borderColor = '#2563eb';
+                } else {
+                    btn.style.background = '#fff';
+                    btn.style.color = '#4b5563';
+                    btn.onclick = () => fetchFunc(i);
+                }
+                container.appendChild(btn);
+            }
+
+            // Nút Next (>)
+            const nextBtn = document.createElement('button');
+            nextBtn.className = 'page-btn';
+            nextBtn.innerHTML = '&gt;';
+            nextBtn.style.cssText = 'min-width: 32px; padding: 5px 11px; border-radius: 6px; border: 1px solid #d7ccc8; margin: 0 2px; font-size: 0.88rem;';
+            if (cur >= total) {
+                nextBtn.disabled = true;
+                nextBtn.style.opacity = '0.4';
+                nextBtn.style.cursor = 'not-allowed';
+            } else {
+                nextBtn.onclick = () => fetchFunc(cur + 1);
+            }
+            container.appendChild(nextBtn);
+        }
+
+        async function fetchDevices() {
+            try {
+                const res = await fetch('/api/devices');
+                const json = await res.json();
+                if (json.success && json.data) {
+                    json.data.forEach(dev => {
+                        const el = document.getElementById(`dev-${dev.device_code}`);
+                        if (el) {
+                            el.checked = (dev.status === 'ON');
+                        }
+                    });
+                }
+            } catch(e) {}
+        }
+
+        // --- KHỞI CHẠY HỆ THỐNG ---
+        checkAuth();
+        fetchDevices();
+        fetchSensorData();
+        setInterval(fetchSensorData, 3000);
+    </script>
+</body>
+</html>

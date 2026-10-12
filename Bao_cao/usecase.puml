@@ -1,0 +1,52 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+' Định nghĩa các Actor (Tác nhân)
+actor "Người dùng (User)" as user
+actor "Quản trị viên (Admin)" as admin
+actor "Hệ thống IoT (ESP32)" as esp32
+
+' Quan hệ kế thừa: Admin có mọi quyền của User
+user <|-- admin 
+
+' Định nghĩa Boundary của hệ thống
+package "Hệ thống Smart Home IoT" {
+  usecase "UC1: Đăng nhập hệ thống" as UC1
+  usecase "UC2: Giám sát môi trường (thời gian thực)" as UC2
+  usecase "UC3: Điều khiển thiết bị (Bật/Tắt)" as UC3
+  usecase "UC4: Xem lịch sử dữ liệu cảm biến" as UC4
+  usecase "UC5: Xem lịch sử hoạt động thiết bị" as UC5
+  usecase "UC6: Quản lý hồ sơ cá nhân" as UC6
+  usecase "Xác thực danh tính" as Auth
+  
+  ' Các use case ngầm định từ hệ thống
+  usecase "Ghi nhận thông số môi trường" as UC_Sys_1
+  usecase "Cập nhật trạng thái phần cứng" as UC_Sys_2
+}
+
+' Liên kết giữa Actor và Use Case
+user --> UC1
+user --> UC2
+user --> UC3
+user --> UC4
+user --> UC5
+user --> UC6
+
+' Các ràng buộc <<include>> (Bắt buộc phải đăng nhập để làm các việc khác)
+UC2 ..> Auth : <<include>>
+UC3 ..> Auth : <<include>>
+UC4 ..> Auth : <<include>>
+UC5 ..> Auth : <<include>>
+UC6 ..> Auth : <<include>>
+UC1 ..> Auth : <<include>>
+
+' Tác động từ Hardware (ESP32)
+esp32 --> UC_Sys_1 : " Gửi MQTT Payload (Sensor)"
+esp32 --> UC_Sys_2 : " Gửi MQTT Status (Thiết bị)"
+
+' Liên kết Use Case hệ thống với Use Case người dùng
+UC_Sys_1 ..> UC2 : "<<extend>> Cập nhật UI"
+UC3 ..> UC_Sys_2 : "<<include>> Đồng bộ DB"
+
+@enduml

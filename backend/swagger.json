@@ -1,0 +1,285 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Smart Home IoT API Documentation",
+    "description": "Tài liệu đặc tả toàn bộ RESTful API cho hệ thống Smart Home IoT (BTL IoT)",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Development Server"
+    }
+  ],
+  "tags": [
+    { "name": "Auth", "description": "Xác thực và phân quyền tài khoản (UC1)" },
+    { "name": "Profile", "description": "Quản lý thông tin hồ sơ cá nhân (UC6)" },
+    { "name": "Sensors", "description": "Dữ liệu cảm biến thời gian thực (UC2)" },
+    { "name": "Devices", "description": "Quản lý và điều khiển thiết bị ngoại vi (UC3)" },
+    { "name": "History", "description": "Truy vấn lịch sử dữ liệu và hoạt động (UC4, UC5)" }
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "summary": "Đăng nhập tài khoản (UC1)",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "username": { "type": "string", "example": "admin" },
+                  "password": { "type": "string", "example": "123456" }
+                },
+                "required": ["username", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Đăng nhập thành công, trả về JWT Token",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Đăng nhập thành công!",
+                  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+                  "user": {
+                    "id": 1,
+                    "username": "admin",
+                    "fullName": "Admin System",
+                    "email": "admin@example.com",
+                    "role": "admin"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Sai tài khoản hoặc mật khẩu" }
+        }
+      }
+    },
+    "/api/profile": {
+      "get": {
+        "summary": "Xem thông tin hồ sơ cá nhân (UC6)",
+        "tags": ["Profile"],
+        "responses": {
+          "200": {
+            "description": "Lấy thông tin hồ sơ thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "user": {
+                    "id": 1,
+                    "username": "admin",
+                    "fullName": "Admin System",
+                    "email": "admin@example.com",
+                    "role": "admin",
+                    "createdAt": "2026-08-25T12:33:46.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Chưa đăng nhập hoặc thiếu Token" }
+        }
+      },
+      "put": {
+        "summary": "Cập nhật hồ sơ cá nhân (UC6)",
+        "tags": ["Profile"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fullName": { "type": "string", "example": "Admin System" },
+                  "email": { "type": "string", "example": "admin@example.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Cập nhật thông tin thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Cập nhật thông tin hồ sơ thành công!",
+                  "updatedUser": {
+                    "id": 1,
+                    "username": "admin",
+                    "fullName": "Admin System",
+                    "email": "admin@example.com",
+                    "role": "admin"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/sensors/data/latest": {
+      "get": {
+        "summary": "Lấy dữ liệu cảm biến mới nhất thời gian thực (UC2)",
+        "tags": ["Sensors"],
+        "responses": {
+          "200": {
+            "description": "Lấy dữ liệu cảm biến thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": {
+                    "temperature": 31.7,
+                    "humidity": 79.0,
+                    "lightLevel": 118.9,
+                    "recordedAt": "2026-08-26T15:50:40.000Z"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Không có dữ liệu cảm biến",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": false,
+                  "message": "Không tìm thấy dữ liệu cảm biến nào."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/devices/toggle": {
+      "post": {
+        "summary": "Bật/Tắt thiết bị ngoại vi (UC3)",
+        "tags": ["Devices"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "deviceCode": { "type": "string", "example": "LED_01" },
+                  "action": { "type": "string", "enum": ["ON", "OFF"], "example": "ON" }
+                },
+                "required": ["deviceCode", "action"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Lệnh điều khiển đã được gửi thành công",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "message": "Đã gửi lệnh điều khiển xuống Broker",
+                  "data": {
+                    "deviceCode": "LED_01",
+                    "action": "ON"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/history/sensors": {
+      "get": {
+        "summary": "Tra cứu lịch sử dữ liệu cảm biến có lọc và phân trang (UC4)",
+        "tags": ["History"],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "description": "Số trang" },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 50 }, "description": "Số bản ghi mỗi trang" },
+          { "name": "searchBy", "in": "query", "schema": { "type": "string", "enum": ["all", "cambien", "nhietdo", "doam", "dosang", "thoigian"] }, "description": "Trường cần tìm kiếm" },
+          { "name": "keyword", "in": "query", "schema": { "type": "string" }, "description": "Từ khóa tìm kiếm" },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "recorded_at" }, "description": "Cột cần sắp xếp" },
+          { "name": "sortOrder", "in": "query", "schema": { "type": "string", "enum": ["ASC", "DESC"], "default": "DESC" }, "description": "Thứ tự sắp xếp" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách lịch sử cảm biến",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": [
+                    {
+                      "id": 105,
+                      "temperature": 31.7,
+                      "humidity": 79.0,
+                      "lightLevel": 118.9,
+                      "recordedAt": "2026-08-26 15:50:40"
+                    }
+                  ],
+                  "pagination": {
+                    "page": 1,
+                    "limit": 50,
+                    "totalRows": 120,
+                    "totalPages": 3
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/history/actions": {
+      "get": {
+        "summary": "Tra cứu lịch sử thao tác bật/tắt thiết bị (UC5)",
+        "tags": ["History"],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "description": "Số trang" },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 }, "description": "Số bản ghi mỗi trang" },
+          { "name": "searchBy", "in": "query", "schema": { "type": "string", "enum": ["all", "thietbi", "trangthai", "thoigian"] }, "description": "Trường tìm kiếm" },
+          { "name": "keyword", "in": "query", "schema": { "type": "string" }, "description": "Từ khóa tìm kiếm theo tên thiết bị / hành động" },
+          { "name": "sortBy", "in": "query", "schema": { "type": "string", "default": "id" }, "description": "Cột sắp xếp" },
+          { "name": "sortOrder", "in": "query", "schema": { "type": "string", "enum": ["ASC", "DESC"], "default": "DESC" }, "description": "Thứ tự sắp xếp" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Danh sách lịch sử hành động thiết bị",
+            "content": {
+              "application/json": {
+                "example": {
+                  "success": true,
+                  "data": [
+                    {
+                      "id": 1,
+                      "deviceName": "Đèn phòng khách",
+                      "status": "ON",
+                      "time": "2026-08-26 17:50:02"
+                    }
+                  ],
+                  "pagination": {
+                    "page": 1,
+                    "limit": 20,
+                    "totalRows": 45,
+                    "totalPages": 3
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

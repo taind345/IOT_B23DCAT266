@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Figma - Dashboard Screen</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f4ecd8;
+            --header-bg: #4a3b32;
+            --card-bg: #fffbf0;
+            --text-main: #3e2723;
+            --accent: #8d6e63;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            width: 1440px;
+            height: 900px;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Courier Prime', monospace;
+            display: flex;
+            flex-direction: row;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            height: 100%;
+            background-color: var(--header-bg);
+            color: #ebd9c8;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 16px;
+            border-right: 3px solid #3e2723;
+        }
+        .sidebar-brand {
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            border-bottom: 2px dashed rgba(235, 217, 200, 0.25);
+            text-align: center;
+        }
+        .sidebar-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.45rem;
+            font-weight: bold;
+            margin: 0;
+            letter-spacing: 1.5px;
+            color: #fffbf0;
+        }
+        .sidebar-subtitle {
+            font-size: 0.78rem;
+            color: #ffcc80;
+            margin-top: 6px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        .nav-link {
+            color: #d7ccc8;
+            padding: 12px 14px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+        .nav-link.active {
+            color: #fff;
+            background: #d84315;
+            border-left: 4px solid #ffcc80;
+            box-shadow: 3px 3px 0px #bf360c;
+        }
+        .nav-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            color: currentColor;
+        }
+        .nav-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: currentColor;
+            stroke-width: 2;
+            fill: none;
+        }
+        .user-section {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 2px dashed rgba(235, 217, 200, 0.25);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+        }
+        .user-badge {
+            font-size: 0.85rem;
+            color: #ffcc80;
+            font-weight: bold;
+            background: rgba(0,0,0,0.2);
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 204, 128, 0.2);
+            text-align: center;
+        }
+        .btn-logout {
+            background: #d84315;
+            color: #fff;
+            border: 1px solid #bf360c;
+            padding: 8px 12px;
+            font-size: 0.88rem;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 2px 2px 0px #bf360c;
+        }
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        .top-cards {
+            display: flex;
+            gap: 20px;
+            height: 130px;
+        }
+        .v-card {
+            flex: 1;
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 4px 4px 0px var(--accent);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .v-card h5 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.2rem;
+            margin: 0 0 5px 0;
+            color: var(--header-bg);
+        }
+        .v-card .value {
+            font-size: 2.2rem;
+            font-weight: bold;
+            color: #d84315;
+        }
+        .bottom-area {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+        .chart-box {
+            flex: 2;
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 4px 4px 0px var(--accent);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-box h5 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            margin: 0 0 15px 0;
+        }
+        .control-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .device-card {
+            flex: 1;
+            background: var(--card-bg);
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+            box-shadow: 4px 4px 0px var(--accent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        .device-card span {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        /* Switch */
+        .switch-ui {
+            width: 50px;
+            height: 26px;
+            background: #ccc;
+            border-radius: 4px;
+            border: 2px solid #3e2723;
+            position: relative;
+        }
+        .switch-ui.on {
+            background: #d84315;
+        }
+        .switch-handle {
+            width: 16px;
+            height: 16px;
+            background: #3e2723;
+            border-radius: 2px;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+        }
+        .switch-ui.on .switch-handle {
+            background: #fff;
+            left: auto;
+            right: 3px;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffcc80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 6px;">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <h1 class="sidebar-title">Smart Home</h1>
+            <div class="sidebar-subtitle">Hệ thống IoT</div>
+        </div>
+        <nav class="nav-links">
+            <a class="nav-link active">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </span>
+                <span>Dashboard</span>
+            </a>
+            <a class="nav-link">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path>
+                    </svg>
+                </span>
+                <span>Lịch sử Cảm biến</span>
+            </a>
+            <a class="nav-link">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </span>
+                <span>Lịch sử Bật Tắt</span>
+            </a>
+            <a class="nav-link">
+                <span class="nav-icon">
+                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </span>
+                <span>Hồ sơ cá nhân</span>
+            </a>
+        </nav>
+        <div class="user-section">
+            <div class="user-badge">Nguyễn Đức Tài (Admin)</div>
+            <div class="btn-logout">Đăng xuất</div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-cards">
+            <div class="v-card">
+                <h5>Nhiệt độ</h5>
+                <div class="value">28.5 °C</div>
+            </div>
+            <div class="v-card">
+                <h5>Độ ẩm</h5>
+                <div class="value" style="color: #0277bd;">68.2 %</div>
+            </div>
+            <div class="v-card">
+                <h5>Độ sáng</h5>
+                <div class="value" style="color: #f57f17;">520 lux</div>
+            </div>
+        </div>
+
+        <div class="bottom-area">
+            <div class="chart-box">
+                <h5>Biểu đồ thời gian thực</h5>
+                <div style="flex: 1; display: flex; flex-direction: column;">
+                    <div style="display: flex; gap: 20px; font-size: 0.85rem; margin-bottom: 15px; font-weight: bold;">
+                        <span style="color: #d84315;">━ Nhiệt độ (°C)</span>
+                        <span style="color: #0277bd;">━ Độ ẩm (%)</span>
+                        <span style="color: #f57f17;">━ Độ sáng (lux)</span>
+                    </div>
+                    <!-- Vector SVG Chart for perfect Figma import -->
+                    <svg width="100%" height="380" viewBox="0 0 700 340" style="overflow: visible;">
+                        <line x1="40" y1="20" x2="680" y2="20" stroke="#d7ccc8" stroke-dasharray="4"/>
+                        <line x1="40" y1="95" x2="680" y2="95" stroke="#d7ccc8" stroke-dasharray="4"/>
+                        <line x1="40" y1="170" x2="680" y2="170" stroke="#d7ccc8" stroke-dasharray="4"/>
+                        <line x1="40" y1="245" x2="680" y2="245" stroke="#d7ccc8" stroke-dasharray="4"/>
+                        <line x1="40" y1="310" x2="680" y2="310" stroke="#8d6e63" stroke-width="2"/>
+                        <line x1="40" y1="20" x2="40" y2="310" stroke="#8d6e63" stroke-width="2"/>
+
+                        <!-- Nhiệt độ (Đỏ) -->
+                        <polyline fill="none" stroke="#d84315" stroke-width="3"
+                            points="50,220 120,215 190,205 260,210 330,195 400,190 470,185 540,195 610,180 670,175"/>
+                        <!-- Độ ẩm (Xanh) -->
+                        <polyline fill="none" stroke="#0277bd" stroke-width="3"
+                            points="50,130 120,125 190,140 260,135 330,120 400,115 470,130 540,125 610,110 670,105"/>
+                        <!-- Ánh sáng (Vàng cam) -->
+                        <polyline fill="none" stroke="#f57f17" stroke-width="3"
+                            points="50,60 120,70 190,55 260,65 330,80 400,75 470,60 540,70 610,50 670,45"/>
+
+                        <text x="35" y="325" fill="#795548" font-size="11" text-anchor="middle">15:40</text>
+                        <text x="190" y="325" fill="#795548" font-size="11" text-anchor="middle">15:41</text>
+                        <text x="350" y="325" fill="#795548" font-size="11" text-anchor="middle">15:42</text>
+                        <text x="510" y="325" fill="#795548" font-size="11" text-anchor="middle">15:43</text>
+                        <text x="670" y="325" fill="#795548" font-size="11" text-anchor="middle">15:44</text>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="control-box">
+                <div class="device-card">
+                    <span>Quạt (Phòng Khách)</span>
+                    <div class="switch-ui on">
+                        <div class="switch-handle"></div>
+                    </div>
+                </div>
+                <div class="device-card">
+                    <span>Đèn 1 (Phòng Khách)</span>
+                    <div class="switch-ui on">
+                        <div class="switch-handle"></div>
+                    </div>
+                </div>
+                <div class="device-card">
+                    <span>Đèn 2 (Phòng Ngủ)</span>
+                    <div class="switch-ui">
+                        <div class="switch-handle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

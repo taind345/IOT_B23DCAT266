@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Figma - All 5 Screens (BTL IoT B23DCAT266)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 40px;
+            background-color: #2b2b2b;
+            font-family: 'Courier Prime', monospace;
+            display: flex;
+            flex-direction: column;
+            gap: 60px;
+            align-items: center;
+        }
+        .artboard-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .artboard-title {
+            color: #ffcc80;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .artboard-frame {
+            width: 1440px;
+            height: 900px;
+            border: 4px solid #4a3b32;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: #f4ecd8;
+        }
+        iframe {
+            width: 1440px;
+            height: 900px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- SCREEN 1 -->
+    <div class="artboard-wrapper">
+        <div class="artboard-title">MÀN HÌNH 1: UC1 - ĐĂNG NHẬP HỆ THỐNG (LOGIN)</div>
+        <div class="artboard-frame">
+            <iframe src="figma_login.html"></iframe>
+        </div>
+    </div>
+
+    <!-- SCREEN 2 -->
+    <div class="artboard-wrapper">
+        <div class="artboard-title">MÀN HÌNH 2: UC2, UC3 - DASHBOARD & ĐIỀU KHIỂN THIẾT BỊ</div>
+        <div class="artboard-frame">
+            <iframe src="figma_dashboard.html"></iframe>
+        </div>
+    </div>
+
+    <!-- SCREEN 3 -->
+    <div class="artboard-wrapper">
+        <div class="artboard-title">MÀN HÌNH 3: UC4 - LỊCH SỬ DỮ LIỆU CẢM BIẾN (DATA SENSOR)</div>
+        <div class="artboard-frame">
+            <iframe src="figma_sensor_history.html"></iframe>
+        </div>
+    </div>
+
+    <!-- SCREEN 4 -->
+    <div class="artboard-wrapper">
+        <div class="artboard-title">MÀN HÌNH 4: UC5 - LỊCH SỬ HOẠT ĐỘNG THIẾT BỊ (ACTIVE HISTORY)</div>
+        <div class="artboard-frame">
+            <iframe src="figma_device_history.html"></iframe>
+        </div>
+    </div>
+
+    <!-- SCREEN 5 -->
+    <div class="artboard-wrapper">
+        <div class="artboard-title">MÀN HÌNH 5: UC6 - HỒ SƠ CÁ NHÂN & TÀI NGUYÊN DỰ ÁN (PROFILE)</div>
+        <div class="artboard-frame">
+            <iframe src="figma_profile.html"></iframe>
+        </div>
+    </div>
+</body>
+</html>

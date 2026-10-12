@@ -1,0 +1,12 @@
+{
+  "name": "btl-iot-root",
+  "version": "1.0.0",
+  "description": "Smart Home IoT Root Launcher",
+  "scripts": {
+    "start": "npm --prefix backend start",
+    "dev": "npm --prefix backend run dev",
+    "sim1": "node simulation_terminals/terminal1_hardware_sim.js",
+    "sim2": "node simulation_terminals/terminal2_backend_client.js",
+    "sim3": "node simulation_terminals/terminal3_monitor_broker.js"
+  }
+}
