@@ -349,17 +349,20 @@
         }
 
         th {
-            background-color: var(--header-bg);
-            color: #ebd9c8;
-            padding: 10px;
+            background-color: #e8e0d0;
+            color: #000000 !important;
+            font-weight: 700;
+            padding: 12px 14px;
             position: sticky;
             top: 0;
+            z-index: 2;
             font-family: 'Playfair Display', serif;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             cursor: pointer;
+            border-bottom: 2px solid #5d4037;
         }
         th:hover {
-            color: #fff;
+            color: #d84315 !important;
         }
 
         td {
@@ -696,11 +699,11 @@
                 <div class="table-wrapper" style="border: 1px solid #e0d7c6; border-radius: 8px; flex: 1; min-height: 0; overflow-y: auto;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
-                            <tr style="background: #f7f3ea; border-bottom: 2px solid #d7ccc8; color: #5d4037; font-size: 0.82rem; letter-spacing: 0.5px;">
-                                <th style="padding: 12px 14px; text-align: left; width: 100px; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortData('id')">ID ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortData('sensorName')">TÊN CẢM BIẾN ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left; width: 180px; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortData('value')">GIÁ TRỊ ĐO ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left; width: 220px; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortData('recordedAt')">THỜI GIAN THU THẬP ⬍</th>
+                            <tr style="background: #e8e0d0; border-bottom: 2px solid #5d4037; color: #000; font-size: 0.85rem; letter-spacing: 0.5px;">
+                                <th style="padding: 12px 14px; text-align: left; width: 100px; position: sticky; top: 0; background: #e8e0d0; color: #000000; font-weight: 700; z-index: 2;" onclick="sortData('id')">ID ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #e8e0d0; color: #000000; font-weight: 700; z-index: 2;" onclick="sortData('sensorName')">TÊN CẢM BIẾN ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; width: 180px; position: sticky; top: 0; background: #e8e0d0; color: #000000; font-weight: 700; z-index: 2;" onclick="sortData('value')">GIÁ TRỊ ĐO ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; width: 220px; position: sticky; top: 0; background: #e8e0d0; color: #000000; font-weight: 700; z-index: 2;" onclick="sortData('recordedAt')">THỜI GIAN THU THẬP ⬍</th>
                             </tr>
                         </thead>
                         <tbody id="table-data">
@@ -738,13 +741,13 @@
                 <div class="table-wrapper" style="border: 1px solid #e0d7c6; border-radius: 8px; flex: 1; min-height: 0; overflow-y: auto;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
-                            <tr style="background: #f7f3ea; border-bottom: 2px solid #d7ccc8; color: #5d4037; font-size: 0.82rem; letter-spacing: 0.5px;">
-                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('deviceId')">ID THIẾT BỊ ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('deviceName')">DEVICE (TÊN THIẾT BỊ) ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('action')">ACTION ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('status')">STATUS ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('time')">TIME (GỬI LỆNH) ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('responseTime')">TIME PHẢN HỒI ⬍</th>
+                            <tr style="background: #e8e0d0; border-bottom: 2px solid #5d4037; color: #000; font-size: 0.85rem; letter-spacing: 0.5px;">
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #e8e0d0; color: #000000; font-weight: 700; z-index: 2;" onclick="sortHist('deviceId')">ID THIẾT BỊ ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #e8e0d0; color: #000000; font-weight: 700; z-index: 2;" onclick="sortHist('deviceName')">DEVICE (TÊN THIẾT BỊ) ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #e8e0d0; color: #000000; font-weight: 700; z-index: 2;" onclick="sortHist('action')">ACTION ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #e8e0d0; color: #000000; font-weight: 700; z-index: 2;" onclick="sortHist('status')">STATUS ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #e8e0d0; color: #000000; font-weight: 700; z-index: 2;" onclick="sortHist('time')">TIME (GỬI LỆNH) ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #e8e0d0; color: #000000; font-weight: 700; z-index: 2;" onclick="sortHist('responseTime')">TIME PHẢN HỒI ⬍</th>
                             </tr>
                         </thead>
                         <tbody id="table-hist">
