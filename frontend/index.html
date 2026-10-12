@@ -313,6 +313,8 @@
             border-radius: 8px;
             box-shadow: 4px 4px 0px var(--accent);
             padding: 20px;
+            box-sizing: border-box;
+            height: 100%;
         }
 
         .toolbar {
@@ -334,7 +336,8 @@
         }
 
         .table-wrapper {
-            flex-grow: 1;
+            flex: 1;
+            min-height: 0;
             overflow-y: auto;
             border: 1px solid #d7ccc8;
         }
@@ -658,14 +661,14 @@
             </div>
 
             <!-- Card Box chứa bảng và bộ lọc khớp ảnh Figma -->
-            <div style="background: #fffdf9; border: 1px solid #d7ccc8; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
-                <div style="margin-bottom: 16px;">
+            <div style="background: #fffdf9; border: 1px solid #d7ccc8; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); flex: 1; display: flex; flex-direction: column; min-height: 0;">
+                <div style="margin-bottom: 14px; flex-shrink: 0;">
                     <div style="font-weight: 700; font-size: 1.15rem; color: #3e2723;">Lịch sử Cảm biến</div>
                     <div style="font-size: 0.85rem; color: #8d6e63; margin-top: 2px;">Dữ liệu đọc từ các cảm biến nhiệt độ, độ ẩm và ánh sáng</div>
                 </div>
 
                 <!-- Filter Bar 3 thành phần theo mẫu Figma -->
-                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 16px; background: #fdfbf7; padding: 12px 14px; border-radius: 8px; border: 1px solid #efebe9;">
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; background: #fdfbf7; padding: 12px 14px; border-radius: 8px; border: 1px solid #efebe9; flex-shrink: 0;">
                     <div style="display: flex; align-items: center; gap: 6px;">
                         <span style="font-size: 0.85rem; color: #5d4037; font-weight: 600;">🌪 Loại cảm biến:</span>
                         <select class="retro-input" id="filter-sensor-type" onchange="fetchDataSensor(1)" style="padding: 7px 10px; border-radius: 6px; border: 1px solid #bcaaa4; background: #fff; font-size: 0.88rem;">
@@ -690,14 +693,14 @@
                     <button class="page-btn" onclick="resetSensorFilter()" style="padding: 7px 12px; border-radius: 6px; background: #d7ccc8; color: #3e2723;">Đặt lại</button>
                 </div>
 
-                <div class="table-wrapper" style="border: 1px solid #e0d7c6; border-radius: 8px; overflow: hidden;">
+                <div class="table-wrapper" style="border: 1px solid #e0d7c6; border-radius: 8px; flex: 1; min-height: 0; overflow-y: auto;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
                             <tr style="background: #f7f3ea; border-bottom: 2px solid #d7ccc8; color: #5d4037; font-size: 0.82rem; letter-spacing: 0.5px;">
-                                <th style="padding: 12px 14px; text-align: left; width: 100px;" onclick="sortData('id')">ID ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left;" onclick="sortData('sensorName')">TÊN CẢM BIẾN ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left; width: 180px;" onclick="sortData('value')">GIÁ TRỊ ĐO ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left; width: 220px;" onclick="sortData('recordedAt')">THỜI GIAN THU THẬP ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; width: 100px; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortData('id')">ID ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortData('sensorName')">TÊN CẢM BIẾN ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; width: 180px; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortData('value')">GIÁ TRỊ ĐO ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; width: 220px; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortData('recordedAt')">THỜI GIAN THU THẬP ⬍</th>
                             </tr>
                         </thead>
                         <tbody id="table-data">
@@ -707,9 +710,9 @@
                 </div>
 
                 <!-- Footer phân trang chuẩn Figma -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; flex-shrink: 0; flex-wrap: wrap; gap: 10px;">
                     <div id="info-sensor-pag" style="font-size: 0.88rem; color: #795548; font-weight: 500;">
-                        Hiển thị 1-8 / 36 bản ghi
+                        Hiển thị 1-10 / 40 bản ghi
                     </div>
                     <div class="pagination" id="pag-data" style="margin: 0;"></div>
                 </div>
@@ -718,10 +721,10 @@
 
         <!-- 3. ACTIVE HISTORY (UC5) -->
         <div id="page-history" class="page-view">
-            <h4 style="font-family: 'Playfair Display'; font-weight: bold; margin-bottom: 12px;">Lịch sử hoạt động thiết bị (Action History - UC5)</h4>
+            <h4 style="font-family: 'Playfair Display'; font-weight: bold; margin-bottom: 12px; flex-shrink: 0;">Lịch sử hoạt động thiết bị (Action History - UC5)</h4>
             
-            <div style="background: #fffdf9; border: 1px solid #d7ccc8; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04);">
-                <div class="toolbar" style="margin-bottom: 16px;">
+            <div style="background: #fffdf9; border: 1px solid #d7ccc8; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); flex: 1; display: flex; flex-direction: column; min-height: 0;">
+                <div class="toolbar" style="margin-bottom: 14px; flex-shrink: 0;">
                     <select class="retro-input" id="search-hist-col" style="border-radius: 6px; padding: 7px 10px;">
                         <option value="all">-- Lọc (Filter): Tất cả --</option>
                         <option value="device">Mã / Tên thiết bị</option>
@@ -732,16 +735,16 @@
                     <input type="text" class="retro-input" id="search-hist-input" placeholder="Nhập từ khóa tìm kiếm..." style="width: 320px; border-radius: 6px; padding: 7px 10px;">
                     <button class="page-btn" onclick="fetchActiveHistory(1)" style="border-radius: 6px; background: #3e2723; color: #fff; padding: 7px 18px;">Tìm kiếm (Search)</button>
                 </div>
-                <div class="table-wrapper" style="border: 1px solid #e0d7c6; border-radius: 8px; overflow: hidden;">
+                <div class="table-wrapper" style="border: 1px solid #e0d7c6; border-radius: 8px; flex: 1; min-height: 0; overflow-y: auto;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
                             <tr style="background: #f7f3ea; border-bottom: 2px solid #d7ccc8; color: #5d4037; font-size: 0.82rem; letter-spacing: 0.5px;">
-                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('deviceId')">ID THIẾT BỊ ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('deviceName')">DEVICE (TÊN THIẾT BỊ) ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('action')">ACTION ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('status')">STATUS ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('time')">TIME (GỬI LỆNH) ⬍</th>
-                                <th style="padding: 12px 14px; text-align: left;" onclick="sortHist('responseTime')">TIME PHẢN HỒI ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('deviceId')">ID THIẾT BỊ ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('deviceName')">DEVICE (TÊN THIẾT BỊ) ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('action')">ACTION ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('status')">STATUS ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('time')">TIME (GỬI LỆNH) ⬍</th>
+                                <th style="padding: 12px 14px; text-align: left; position: sticky; top: 0; background: #f7f3ea; z-index: 2;" onclick="sortHist('responseTime')">TIME PHẢN HỒI ⬍</th>
                             </tr>
                         </thead>
                         <tbody id="table-hist">
@@ -751,9 +754,9 @@
                 </div>
 
                 <!-- Footer phân trang chuẩn cho Active History -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; flex-shrink: 0; flex-wrap: wrap; gap: 10px;">
                     <div id="info-hist-pag" style="font-size: 0.88rem; color: #795548; font-weight: 500;">
-                        Hiển thị 1-8 / 28 bản ghi
+                        Hiển thị 1-10 / 28 bản ghi
                     </div>
                     <div class="pagination" id="pag-hist" style="margin: 0;"></div>
                 </div>
@@ -1024,7 +1027,7 @@
         }
 
         // --- DATA SENSOR LOGIC (UC4) - KHỚP CHUẨN FIGMA ---
-        let dataState = { page: 1, limit: 8, sortBy: 'id', sortOrder: 'ASC' };
+        let dataState = { page: 1, limit: 10, sortBy: 'id', sortOrder: 'ASC' };
         
         function sortData(col) {
             if (dataState.sortBy === col) {
@@ -1102,7 +1105,7 @@
         }
 
         // --- ACTIVE HISTORY LOGIC (UC5) ---
-        let histState = { page: 1, limit: 8, sortBy: 'id', sortOrder: 'DESC' };
+        let histState = { page: 1, limit: 10, sortBy: 'id', sortOrder: 'DESC' };
         
         function sortHist(col) {
             if (histState.sortBy === col) {

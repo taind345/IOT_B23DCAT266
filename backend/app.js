@@ -93,12 +93,12 @@ function startSensorSimulator() {
                 [temp, humi, light]
             );
 
-            // Giữ tối đa 40 bản ghi gần nhất (tương ứng đúng 5 trang x 8 bản ghi/trang)
+            // Giữ tối đa 50 bản ghi gần nhất (tương ứng đúng 5 trang x 10 bản ghi/trang)
             await db.execute(`
                 DELETE FROM sensor_data 
                 WHERE id NOT IN (
                     SELECT id FROM (
-                        SELECT id FROM sensor_data ORDER BY id DESC LIMIT 40
+                        SELECT id FROM sensor_data ORDER BY id DESC LIMIT 50
                     ) AS keep_rows
                 )
             `);
