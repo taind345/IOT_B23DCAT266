@@ -4,18 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Home System</title>
-    <!-- Thư viện giao diện & Phông chữ -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- File CSS tách riêng: css/style.css (Chứa toàn bộ màu sắc, kích thước, hiệu ứng) -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-    <!-- ======================================================================
-         1. MÀN HÌNH ĐĂNG NHẬP / XÁC THỰC (UC1)
-         ====================================================================== -->
+    <!-- Đăng nhập -->
     <div id="login-overlay">
         <div class="login-card">
             <h2>ĐĂNG NHẬP</h2>
@@ -37,11 +32,8 @@
         </div>
     </div>
 
-    <!-- ======================================================================
-         2. THANH PANEL DỌC BÊN TRÁI (SIDEBAR)
-         ====================================================================== -->
+    <!-- Sidebar -->
     <aside class="sidebar">
-        <!-- Logo & Tiêu đề -->
         <div class="sidebar-brand">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ffcc80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:6px;">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
@@ -51,60 +43,36 @@
             <div class="sidebar-subtitle">Hệ thống IoT</div>
         </div>
 
-        <!-- Danh sách menu điều hướng -->
         <nav class="nav-links">
             <a class="nav-link active" id="nav-dashboard" onclick="switchTab('dashboard')">
-                <span class="nav-icon">
-                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
-                        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
-                    </svg>
-                </span>
+                <span class="nav-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
                 <span>Dashboard</span>
             </a>
             <a class="nav-link" id="nav-data" onclick="switchTab('data')">
-                <span class="nav-icon">
-                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/>
-                    </svg>
-                </span>
+                <span class="nav-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg></span>
                 <span>Lịch sử Cảm biến</span>
             </a>
             <a class="nav-link" id="nav-history" onclick="switchTab('history')">
-                <span class="nav-icon">
-                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                    </svg>
-                </span>
+                <span class="nav-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
                 <span>Lịch sử Bật Tắt</span>
             </a>
             <a class="nav-link" id="nav-profile" onclick="switchTab('profile')">
-                <span class="nav-icon">
-                    <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                    </svg>
-                </span>
+                <span class="nav-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
                 <span>Hồ sơ cá nhân</span>
             </a>
         </nav>
 
-        <!-- Thông tin người dùng & Đăng xuất -->
         <div class="user-section">
             <div class="user-badge" id="current-user-badge">Nguyễn Đức Tài (Admin)</div>
             <button class="btn-logout" onclick="handleLogout()">Đăng xuất</button>
         </div>
     </aside>
 
-    <!-- ======================================================================
-         3. KHUNG NỘI DUNG CHÍNH (MAIN CONTENT)
-         ====================================================================== -->
+    <!-- Nội dung chính -->
     <div class="main-content">
 
-        <!-- ------------------------------------------------------------------
-             TAB 1: DASHBOARD (UC2, UC3)
-             ------------------------------------------------------------------ -->
+        <!-- 1. Dashboard -->
         <div id="page-dashboard" class="page-view active">
-            <!-- 3 thẻ đo thông số môi trường -->
             <div class="top-cards">
                 <div class="v-card">
                     <h5>Nhiệt độ</h5>
@@ -121,7 +89,6 @@
             </div>
             
             <div class="bottom-area">
-                <!-- Biểu đồ đường thời gian thực Chart.js -->
                 <div class="chart-box">
                     <h5 style="font-family: 'Playfair Display';">Biểu đồ thời gian thực</h5>
                     <div style="flex: 1; position: relative; width: 100%;">
@@ -129,7 +96,6 @@
                     </div>
                 </div>
 
-                <!-- Bảng 3 công tắc điều khiển thiết bị -->
                 <div class="control-box">
                     <div class="device-card">
                         <span>Quạt (Phòng Khách)</span>
@@ -156,11 +122,8 @@
             </div>
         </div>
 
-        <!-- ------------------------------------------------------------------
-             TAB 2: LỊCH SỬ CẢM BIẾN (UC4)
-             ------------------------------------------------------------------ -->
+        <!-- 2. Lịch sử cảm biến -->
         <div id="page-data" class="page-view">
-            <!-- Tiêu đề & Trạng thái kết nối -->
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
                 <div>
                     <h3 style="font-family: 'Playfair Display', serif; font-weight: 700; margin: 0; font-size: 1.65rem; color: #3e2723;">Lịch sử Cảm biến</h3>
@@ -173,14 +136,12 @@
                 </div>
             </div>
 
-            <!-- Khung bảng & Bộ lọc -->
             <div class="panel-box">
                 <div style="margin-bottom: 14px; flex-shrink: 0;">
                     <div style="font-weight: 700; font-size: 1.15rem; color: #3e2723;">Lịch sử Cảm biến</div>
                     <div style="font-size: 0.85rem; color: #8d6e63; margin-top: 2px;">Dữ liệu đọc từ các cảm biến nhiệt độ, độ ẩm và ánh sáng</div>
                 </div>
 
-                <!-- Bộ lọc tìm kiếm cảm biến -->
                 <div class="filter-bar">
                     <div class="filter-item">
                         <label>🌪 Loại cảm biến:</label>
@@ -203,7 +164,6 @@
                     <button class="page-btn" onclick="resetSensorFilter()" style="padding: 7px 12px; border-radius: 6px; background: #d7ccc8; color: #3e2723;">Đặt lại</button>
                 </div>
 
-                <!-- Bảng danh sách dữ liệu cảm biến -->
                 <div class="table-wrapper">
                     <table>
                         <thead>
@@ -218,7 +178,6 @@
                     </table>
                 </div>
 
-                <!-- Phân trang cảm biến -->
                 <div class="pagination-bar">
                     <div id="info-sensor-pag" class="pag-info">Hiển thị 1-10 / 40 bản ghi</div>
                     <div class="pagination" id="pag-data"></div>
@@ -226,14 +185,11 @@
             </div>
         </div>
 
-        <!-- ------------------------------------------------------------------
-             TAB 3: LỊCH SỬ BẬT TẮT THIẾT BỊ (UC5)
-             ------------------------------------------------------------------ -->
+        <!-- 3. Lịch sử bật tắt -->
         <div id="page-history" class="page-view">
             <h4 style="font-family: 'Playfair Display'; font-weight: bold; margin-bottom: 12px; flex-shrink: 0;">Lịch sử hoạt động thiết bị (Action History - UC5)</h4>
             
             <div class="panel-box">
-                <!-- Thanh tìm kiếm lịch sử -->
                 <div class="toolbar">
                     <select class="retro-input" id="search-hist-col" style="border-radius: 6px; padding: 7px 10px;">
                         <option value="all">-- Lọc (Filter): Tất cả --</option>
@@ -246,7 +202,6 @@
                     <button class="page-btn" onclick="fetchActiveHistory(1)" style="border-radius: 6px; background: #3e2723; color: #fff; padding: 7px 18px;">Tìm kiếm (Search)</button>
                 </div>
 
-                <!-- Bảng danh sách lịch sử bật tắt -->
                 <div class="table-wrapper">
                     <table>
                         <thead>
@@ -263,7 +218,6 @@
                     </table>
                 </div>
 
-                <!-- Phân trang lịch sử -->
                 <div class="pagination-bar">
                     <div id="info-hist-pag" class="pag-info">Hiển thị 1-10 / 28 bản ghi</div>
                     <div class="pagination" id="pag-hist"></div>
@@ -271,14 +225,11 @@
             </div>
         </div>
 
-        <!-- ------------------------------------------------------------------
-             TAB 4: HỒ SƠ CÁ NHÂN & TÀI NGUYÊN (UC6)
-             ------------------------------------------------------------------ -->
+        <!-- 4. Hồ sơ cá nhân -->
         <div id="page-profile" class="page-view" style="overflow-y: auto;">
             <h4 style="font-family: 'Playfair Display'; font-weight: bold;">Hồ sơ cá nhân & Tài nguyên dự án (Profile - UC6)</h4>
             
             <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 15px; width: 100%;">
-                <!-- Khung thông tin cá nhân -->
                 <div class="profile-container" style="flex: 1; min-width: 340px; margin: 0;">
                     <h5 style="font-family: 'Playfair Display'; font-weight: bold; border-bottom: 2px dashed #a1887f; padding-bottom: 8px;">Thông tin cá nhân</h5>
                     <div id="profile-msg" class="alert-box alert-success"></div>
@@ -306,7 +257,6 @@
                     </form>
                 </div>
 
-                <!-- Khung liên kết tài nguyên đồ án -->
                 <div class="profile-container" style="flex: 1; min-width: 340px; margin: 0;">
                     <h5 style="font-family: 'Playfair Display'; font-weight: bold; border-bottom: 2px dashed #a1887f; padding-bottom: 8px;">Liên kết tài nguyên dự án</h5>
                     <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 15px;">
@@ -332,9 +282,7 @@
         </div>
     </div>
 
-    <!-- Thư viện biểu đồ Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- File Logic JavaScript tách riêng: js/app.js (Chứa toàn bộ gọi API, điều khiển, phân trang) -->
     <script src="js/app.js"></script>
 </body>
 </html>

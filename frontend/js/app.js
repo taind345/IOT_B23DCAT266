@@ -1,83 +1,42 @@
-/* ==========================================================================
-   SMART HOME IOT - LOGIC ĐIỀU KHIỂN & GIAO TIẾP API (FRONTEND)
-   MỤC LỤC TÌM KIẾM NHANH KHI BỊ THẦY HỎI / BẮT SỬA CODE:
-   1. HÀM DÙNG CHUNG (fmtTime, badge, updatePagInfo)
-   2. UC1: XÁC THỰC & ĐĂNG NHẬP (checkAuth, handleLogin, handleLogout)
-   3. UC6: HỒ SƠ CÁ NHÂN (fetchProfile, handleUpdateProfile)
-   4. ĐIỀU HƯỚNG TABS (switchTab)
-   5. UC2 & UC3: DASHBOARD & ĐIỀU KHIỂN THIẾT BỊ (toggleDevice, fetchDevices)
-   6. BIỂU ĐỒ REALTIME CHART.JS (fetchSensorData, updateChart)
-   7. UC4: LỊCH SỬ DỮ LIỆU CẢM BIẾN (fetchDataSensor, sortData, resetSensorFilter)
-   8. UC5: LỊCH SỬ BẬT TẮT THIẾT BỊ (fetchActiveHistory, sortHist)
-   9. TIỆN ÍCH PHÂN TRANG HIỆN ĐẠI (renderPaginationModern)
-   10. KHỞI CHẠY HỆ THỐNG
-   ========================================================================== */
+// Biến toàn cục
+let currentAuthToken = localStorage.getItem('token') || '';
+let currentUser = null;
+let dataState = { page: 1, limit: 10, sortBy: 'id', sortOrder: 'ASC' };
+let histState = { page: 1, limit: 10, sortBy: 'id', sortOrder: 'DESC' };
 
-/* --------------------------------------------------------------------------
-   1. HÀM DÙNG CHUNG (UTILITIES)
-   -------------------------------------------------------------------------- */
-/**
- * Định dạng ngày giờ thành chuỗi dd/mm/yyyy hh:mm
- * @param {string|Date} d - Chuỗi hoặc đối tượng thời gian
- */
-const fmtTime = (d) => {
-    const dt = new Date(d);
-    const pad = (n) => ('0' + n).slice(-2);
+// Format thời gian dd/mm/yyyy hh:mm
+const fmtTime = d => {
+    const dt = new Date(d), pad = n => ('0' + n).slice(-2);
     return `${pad(dt.getDate())}/${pad(dt.getMonth() + 1)}/${dt.getFullYear()} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
 };
 
-/**
- * Sinh chuỗi HTML huy hiệu (Badge) có màu nền tương ứng
- * @param {string} text - Nội dung huy hiệu (ON/OFF/loading...)
- * @param {string} bg - Mã màu HEX
- */
+// Huy hiệu trạng thái
 const badge = (text, bg) => `<span style="background:${bg};color:#fff;padding:2px 8px;border-radius:4px;font-weight:bold;font-size:0.85rem;">${text}</span>`;
 
-/**
- * Cập nhật dòng chữ hiển thị phân trang (Ví dụ: Hiển thị 1-10 / 40 bản ghi)
- * @param {string} id - ID của phần tử chứa text
- * @param {object} pag - Đối tượng phân trang từ API
- */
+// Cập nhật text số bản ghi phân trang
 const updatePagInfo = (id, pag) => {
     const el = document.getElementById(id);
     if (!el) return;
-    if (!pag || pag.totalItems <= 0) {
-        el.innerText = 'Không có bản ghi nào';
-        return;
-    }
-    const start = (pag.currentPage - 1) * pag.limit + 1;
-    const end = Math.min(pag.currentPage * pag.limit, pag.totalItems);
-    el.innerText = `Hiển thị ${start}-${end} / ${pag.totalItems} bản ghi`;
+    el.innerText = (!pag || pag.totalItems <= 0) ? 'Không có bản ghi nào' :
+        `Hiển thị ${(pag.currentPage - 1) * pag.limit + 1}-${Math.min(pag.currentPage * pag.limit, pag.totalItems)} / ${pag.totalItems} bản ghi`;
 };
 
-/* --------------------------------------------------------------------------
-   2. UC1: XÁC THỰC & ĐĂNG NHẬP (AUTHENTICATION)
-   -------------------------------------------------------------------------- */
-let currentAuthToken = localStorage.getItem('token') || '';
-let currentUser = null;
-
-/**
- * Kiểm tra trạng thái đăng nhập khi mở trang web
- */
+// Kiểm tra đăng nhập
 function checkAuth() {
-    if (!currentAuthToken) {
-        document.getElementById('login-overlay').style.display = 'flex';
-    } else {
-        document.getElementById('login-overlay').style.display = 'none';
-        try {
-            const savedUser = JSON.parse(localStorage.getItem('user'));
-            if (savedUser) {
-                currentUser = savedUser;
-                document.getElementById('current-user-badge').innerText = `User: ${savedUser.fullName || savedUser.username} (${savedUser.role})`;
-            }
-        } catch (e) {}
-        fetchProfile();
-    }
+    const overlay = document.getElementById('login-overlay');
+    if (!currentAuthToken) { overlay.style.display = 'flex'; return; }
+    overlay.style.display = 'none';
+    try {
+        const u = JSON.parse(localStorage.getItem('user'));
+        if (u) {
+            currentUser = u;
+            document.getElementById('current-user-badge').innerText = `User: ${u.fullName || u.username} (${u.role})`;
+        }
+    } catch (e) {}
+    fetchProfile();
 }
 
-/**
- * Xử lý sự kiện đăng nhập khi bấm submit form
- */
+// Xử lý đăng nhập
 async function handleLogin(e) {
     e.preventDefault();
     const username = document.getElementById('login-username').value.trim();
@@ -92,9 +51,7 @@ async function handleLogin(e) {
             body: JSON.stringify({ username, password })
         });
         const data = await res.json();
-        if (!res.ok || !data.success) {
-            throw new Error(data.message || 'Đăng nhập thất bại');
-        }
+        if (!res.ok || !data.success) throw new Error(data.message || 'Đăng nhập thất bại');
 
         currentAuthToken = data.token;
         currentUser = data.user;
@@ -103,7 +60,6 @@ async function handleLogin(e) {
 
         document.getElementById('login-overlay').style.display = 'none';
         document.getElementById('current-user-badge').innerText = `User: ${data.user.fullName || data.user.username} (${data.user.role})`;
-        
         switchTab('dashboard');
         fetchSensorData();
     } catch (err) {
@@ -112,9 +68,7 @@ async function handleLogin(e) {
     }
 }
 
-/**
- * Xử lý đăng xuất tài khoản
- */
+// Đăng xuất
 function handleLogout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -123,18 +77,11 @@ function handleLogout() {
     document.getElementById('login-overlay').style.display = 'flex';
 }
 
-/* --------------------------------------------------------------------------
-   3. UC6: HỒ SƠ CÁ NHÂN & TÀI NGUYÊN (USER PROFILE)
-   -------------------------------------------------------------------------- */
-/**
- * Lấy thông tin hồ sơ cá nhân của người dùng hiện tại từ Backend
- */
+// Lấy thông tin tài khoản
 async function fetchProfile() {
     if (!currentAuthToken) return;
     try {
-        const res = await fetch('/api/profile', {
-            headers: { 'Authorization': `Bearer ${currentAuthToken}` }
-        });
+        const res = await fetch('/api/profile', { headers: { 'Authorization': `Bearer ${currentAuthToken}` } });
         const json = await res.json();
         if (json.success && json.user) {
             const u = json.user;
@@ -149,9 +96,7 @@ async function fetchProfile() {
     } catch (e) {}
 }
 
-/**
- * Cập nhật thông tin họ tên, email cá nhân
- */
+// Cập nhật thông tin tài khoản
 async function handleUpdateProfile(e) {
     e.preventDefault();
     const fullName = document.getElementById('profile-fullname').value.trim();
@@ -161,10 +106,7 @@ async function handleUpdateProfile(e) {
     try {
         const res = await fetch('/api/profile', {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${currentAuthToken}`
-            },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentAuthToken}` },
             body: JSON.stringify({ fullName, email })
         });
         const json = await res.json();
@@ -175,66 +117,45 @@ async function handleUpdateProfile(e) {
         setTimeout(() => msgBox.style.display = 'none', 3000);
         fetchProfile();
     } catch (err) {
-        alert('Lỗi cập nhật hồ sơ: ' + err.message);
+        alert('Lỗi cập nhật: ' + err.message);
     }
 }
 
-/* --------------------------------------------------------------------------
-   4. ĐIỀU HƯỚNG CÁC TRANG TABS (NAVIGATION)
-   -------------------------------------------------------------------------- */
-/**
- * Chuyển đổi giữa các tab: dashboard, data, history, profile
- * @param {string} tabId - Tên tab
- */
+// Chuyển đổi tab
 function switchTab(tabId) {
     document.querySelectorAll('.page-view').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
 
-    const targetPage = document.getElementById('page-' + tabId);
-    const targetNav = document.getElementById('nav-' + tabId);
-    if (targetPage) targetPage.classList.add('active');
-    if (targetNav) targetNav.classList.add('active');
+    const page = document.getElementById('page-' + tabId);
+    const nav = document.getElementById('nav-' + tabId);
+    if (page) page.classList.add('active');
+    if (nav) nav.classList.add('active');
 
-    // Tự động load dữ liệu tương ứng khi vào từng màn hình
-    if (tabId === 'dashboard' && typeof sensorChart !== 'undefined') {
-        setTimeout(() => sensorChart.resize(), 50);
-    }
+    if (tabId === 'dashboard' && typeof sensorChart !== 'undefined') setTimeout(() => sensorChart.resize(), 50);
     if (tabId === 'data') fetchDataSensor();
     if (tabId === 'history') fetchActiveHistory();
     if (tabId === 'profile') fetchProfile();
 }
 
-/* --------------------------------------------------------------------------
-   5. UC2 & UC3: DASHBOARD & ĐIỀU KHIỂN THIẾT BỊ (DEVICE CONTROL)
-   -------------------------------------------------------------------------- */
-/**
- * Gửi lệnh bật/tắt thiết bị (Quạt, Đèn 1, Đèn 2) xuống Backend
- * @param {string} deviceCode - FAN_01, LED_01, LED_02
- * @param {HTMLInputElement} checkboxEl - Thẻ input checkbox tương ứng
- */
+// Bật tắt thiết bị
 async function toggleDevice(deviceCode, checkboxEl) {
     const isChecked = checkboxEl.checked;
     const action = isChecked ? 'ON' : 'OFF';
     try {
         const res = await fetch('/api/v1/devices/toggle', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${currentAuthToken}`
-            },
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${currentAuthToken}` },
             body: JSON.stringify({ deviceCode, action })
         });
         const result = await res.json();
         if (!res.ok || !result.success) throw new Error(result.message);
     } catch (error) {
-        alert('Lỗi điều khiển thiết bị: ' + error.message);
-        checkboxEl.checked = !isChecked; // Khôi phục trạng thái cũ nếu lỗi
+        alert('Lỗi điều khiển: ' + error.message);
+        checkboxEl.checked = !isChecked;
     }
 }
 
-/**
- * Tải trạng thái hiện tại của toàn bộ thiết bị khi mở trang
- */
+// Lấy trạng thái thiết bị
 async function fetchDevices() {
     try {
         const res = await fetch('/api/devices');
@@ -248,9 +169,7 @@ async function fetchDevices() {
     } catch (e) {}
 }
 
-/* --------------------------------------------------------------------------
-   6. BIỂU ĐỒ THỜI GIAN THỰC (REALTIME SENSOR MONITORING)
-   -------------------------------------------------------------------------- */
+// Biểu đồ Chart.js
 const ctx = document.getElementById('sensorChart').getContext('2d');
 const sensorChart = new Chart(ctx, {
     type: 'line',
@@ -263,9 +182,7 @@ const sensorChart = new Chart(ctx, {
         ]
     },
     options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: false,
+        responsive: true, maintainAspectRatio: false, animation: false,
         plugins: { legend: { labels: { font: { family: "'Courier Prime', monospace" } } } },
         scales: {
             x: { ticks: { font: { family: "'Courier Prime', monospace" } } },
@@ -274,12 +191,8 @@ const sensorChart = new Chart(ctx, {
     }
 });
 
-/**
- * Cập nhật các điểm dữ liệu mới vào biểu đồ Chart.js (tối đa 10 điểm gần nhất)
- */
 function updateChart(data) {
-    const timeLabel = new Date().toLocaleTimeString();
-    sensorChart.data.labels.push(timeLabel);
+    sensorChart.data.labels.push(new Date().toLocaleTimeString());
     sensorChart.data.datasets[0].data.push(data.temperature);
     sensorChart.data.datasets[1].data.push(data.humidity);
     sensorChart.data.datasets[2].data.push(data.lightLevel);
@@ -290,9 +203,6 @@ function updateChart(data) {
     sensorChart.update();
 }
 
-/**
- * Lấy dữ liệu cảm biến mới nhất từ server và cập nhật lên thẻ Dashboard + Biểu đồ
- */
 async function fetchSensorData() {
     try {
         const res = await fetch('/api/v1/sensors/data/latest');
@@ -308,43 +218,29 @@ async function fetchSensorData() {
     } catch (e) {}
 }
 
-/* --------------------------------------------------------------------------
-   7. UC4: LỊCH SỬ DỮ LIỆU CẢM BIẾN (SENSOR DATA HISTORY)
-   -------------------------------------------------------------------------- */
-let dataState = { page: 1, limit: 10, sortBy: 'id', sortOrder: 'ASC' };
-
-/**
- * Sắp xếp bảng lịch sử cảm biến theo cột được nhấn
- * @param {string} col - Tên trường: id, sensorName, value, recordedAt
- */
+// Lịch sử dữ liệu cảm biến
 function sortData(col) {
     dataState.sortOrder = (dataState.sortBy === col && dataState.sortOrder === 'ASC') ? 'DESC' : 'ASC';
     dataState.sortBy = col;
     fetchDataSensor(1);
 }
 
-/**
- * Xóa bộ lọc tìm kiếm cảm biến về mặc định
- */
 function resetSensorFilter() {
-    const t = document.getElementById('filter-sensor-type');
-    const v = document.getElementById('filter-sensor-value');
-    const tm = document.getElementById('filter-sensor-time');
-    if (t) t.value = 'all';
-    if (v) v.value = '';
-    if (tm) tm.value = '';
+    ['filter-sensor-value', 'filter-sensor-time'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    const typeEl = document.getElementById('filter-sensor-type');
+    if (typeEl) typeEl.value = 'all';
     fetchDataSensor(1);
 }
 
-/**
- * Lấy danh sách lịch sử cảm biến theo bộ lọc, trang và thứ tự sắp xếp
- */
 async function fetchDataSensor(page = dataState.page) {
     dataState.page = page;
-    const sensorType = document.getElementById('filter-sensor-type')?.value || 'all';
-    const keywordValue = document.getElementById('filter-sensor-value')?.value || '';
-    const keywordTime = document.getElementById('filter-sensor-time')?.value || '';
-    const url = `/api/history/sensors?page=${page}&limit=${dataState.limit}&sensorType=${encodeURIComponent(sensorType)}&keywordValue=${encodeURIComponent(keywordValue)}&keywordTime=${encodeURIComponent(keywordTime)}&sortBy=${dataState.sortBy}&sortOrder=${dataState.sortOrder}`;
+    const type = document.getElementById('filter-sensor-type')?.value || 'all';
+    const val = document.getElementById('filter-sensor-value')?.value || '';
+    const time = document.getElementById('filter-sensor-time')?.value || '';
+    const url = `/api/history/sensors?page=${page}&limit=${dataState.limit}&sensorType=${encodeURIComponent(type)}&keywordValue=${encodeURIComponent(val)}&keywordTime=${encodeURIComponent(time)}&sortBy=${dataState.sortBy}&sortOrder=${dataState.sortOrder}`;
 
     try {
         const res = await fetch(url);
@@ -352,49 +248,36 @@ async function fetchDataSensor(page = dataState.page) {
         if (json.success) {
             const tbody = document.getElementById('table-data');
             if (!json.data || json.data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding: 25px; color: #8d6e63;">Không tìm thấy bản ghi cảm biến nào</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:25px;color:#8d6e63;">Không tìm thấy bản ghi nào</td></tr>';
             } else {
                 tbody.innerHTML = json.data.map(row => {
-                    const valColor = row.sensorType === 'humidity' ? '#0277bd' : (row.sensorType === 'light' ? '#e65100' : '#d84315');
+                    const color = row.sensorType === 'humidity' ? '#0277bd' : (row.sensorType === 'light' ? '#e65100' : '#d84315');
                     return `<tr>
-                        <td style="color: #9e9e9e; font-family: monospace; font-size: 0.92rem;">${row.displayId || ('#' + String(row.id).padStart(3, '0'))}</td>
-                        <td style="font-weight: 500; color: #3e2723;">${row.sensorName}</td>
-                        <td style="font-weight: 700; color: ${valColor}; font-size: 0.95rem;">${row.value} ${row.unit}</td>
-                        <td style="color: #616161; font-family: monospace;">${fmtTime(row.recordedAt)}</td>
+                        <td style="color:#9e9e9e;font-family:monospace;font-size:0.92rem;">${row.displayId || ('#' + String(row.id).padStart(3, '0'))}</td>
+                        <td style="font-weight:500;color:#3e2723;">${row.sensorName}</td>
+                        <td style="font-weight:700;color:${color};font-size:0.95rem;">${row.value} ${row.unit}</td>
+                        <td style="color:#616161;font-family:monospace;">${fmtTime(row.recordedAt)}</td>
                     </tr>`;
                 }).join('');
             }
             updatePagInfo('info-sensor-pag', json.pagination);
             renderPaginationModern('pag-data', json.pagination, fetchDataSensor);
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) {}
 }
 
-/* --------------------------------------------------------------------------
-   8. UC5: LỊCH SỬ BẬT TẮT THIẾT BỊ (ACTION HISTORY)
-   -------------------------------------------------------------------------- */
-let histState = { page: 1, limit: 10, sortBy: 'id', sortOrder: 'DESC' };
-
-/**
- * Sắp xếp bảng lịch sử hoạt động thiết bị
- * @param {string} col - Tên trường: deviceId, deviceName, action, status, time, responseTime
- */
+// Lịch sử bật tắt thiết bị
 function sortHist(col) {
     histState.sortOrder = (histState.sortBy === col && histState.sortOrder === 'ASC') ? 'DESC' : 'ASC';
     histState.sortBy = col;
     fetchActiveHistory(1);
 }
 
-/**
- * Lấy danh sách lịch sử bật/tắt thiết bị theo từ khóa tìm kiếm và trang
- */
 async function fetchActiveHistory(page = histState.page) {
     histState.page = page;
-    const searchBy = document.getElementById('search-hist-col').value;
-    const keyword = document.getElementById('search-hist-input').value;
-    const url = `/api/history/actions?page=${page}&limit=${histState.limit}&searchBy=${searchBy}&keyword=${encodeURIComponent(keyword)}&sortBy=${histState.sortBy}&sortOrder=${histState.sortOrder}`;
+    const col = document.getElementById('search-hist-col').value;
+    const kw = document.getElementById('search-hist-input').value;
+    const url = `/api/history/actions?page=${page}&limit=${histState.limit}&searchBy=${col}&keyword=${encodeURIComponent(kw)}&sortBy=${histState.sortBy}&sortOrder=${histState.sortOrder}`;
 
     try {
         const res = await fetch(url);
@@ -402,50 +285,35 @@ async function fetchActiveHistory(page = histState.page) {
         const tbody = document.getElementById('table-hist');
         if (json.success) {
             if (!json.data || json.data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 25px; color: #8d6e63;">Chưa có lịch sử hoạt động nào</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:25px;color:#8d6e63;">Chưa có lịch sử hoạt động</td></tr>';
             } else {
                 tbody.innerHTML = json.data.map(row => {
                     const actBadge = badge(row.action, row.action === 'ON' ? '#2e7d32' : '#c62828');
                     const statColor = row.status === 'ON' ? '#2e7d32' : (row.status === 'OFF' ? '#c62828' : '#f57f17');
-                    const statBadge = badge(row.status || 'loading', statColor);
-                    const devId = row.deviceId || row.deviceCode || 'DEV';
                     return `<tr>
-                        <td><span class="dev-tag">${devId}</span></td>
+                        <td><span class="dev-tag">${row.deviceId || row.deviceCode || 'DEV'}</span></td>
                         <td><b>${row.deviceName}</b></td>
                         <td>${actBadge}</td>
-                        <td>${statBadge}</td>
-                        <td style="font-family: monospace;">${fmtTime(row.time)}</td>
-                        <td style="font-family: monospace;">${fmtTime(row.responseTime || row.time)}</td>
+                        <td>${badge(row.status || 'loading', statColor)}</td>
+                        <td style="font-family:monospace;">${fmtTime(row.time)}</td>
+                        <td style="font-family:monospace;">${fmtTime(row.responseTime || row.time)}</td>
                     </tr>`;
                 }).join('');
             }
             updatePagInfo('info-hist-pag', json.pagination);
             renderPaginationModern('pag-hist', json.pagination, fetchActiveHistory);
         } else if (tbody) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 25px; color: #c62828;">${json.message || 'Lỗi tải dữ liệu'}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:25px;color:#c62828;">${json.message || 'Lỗi tải dữ liệu'}</td></tr>`;
         }
-    } catch (e) {
-        console.error(e);
-    }
+    } catch (e) {}
 }
 
-/* --------------------------------------------------------------------------
-   9. TIỆN ÍCH PHÂN TRANG HIỆN ĐẠI (PAGINATION GENERATOR)
-   -------------------------------------------------------------------------- */
-/**
- * Tạo các nút phân trang chuẩn Figma (Tối đa 5 trang: < 1 2 3 4 5 >)
- * @param {string} containerId - ID của thẻ chứa phân trang
- * @param {object} pagination - Đối tượng phân trang ({ currentPage, totalPages })
- * @param {function} fetchFunc - Hàm callback gọi lại khi bấm chuyển trang
- */
+// Phân trang
 function renderPaginationModern(containerId, pagination, fetchFunc) {
     const container = document.getElementById(containerId);
-    if (!container) return;
+    if (!container || !pagination || pagination.totalPages <= 0) return;
     container.innerHTML = '';
-    if (!pagination || pagination.totalPages <= 0) return;
-
-    const cur = pagination.currentPage;
-    const total = Math.min(pagination.totalPages, 5); // Giới hạn hiển thị tối đa 5 trang
+    const cur = pagination.currentPage, total = Math.min(pagination.totalPages, 5);
 
     const addBtn = (label, disabled, active, onClick) => {
         const btn = document.createElement('button');
@@ -456,23 +324,13 @@ function renderPaginationModern(containerId, pagination, fetchFunc) {
         container.appendChild(btn);
     };
 
-    // Nút lùi trang (<)
     addBtn('&lt;', cur <= 1, false, () => fetchFunc(cur - 1));
-
-    // Các nút số trang
-    for (let i = 1; i <= total; i++) {
-        addBtn(i, false, i === cur, () => fetchFunc(i));
-    }
-
-    // Nút tiến trang (>)
+    for (let i = 1; i <= total; i++) addBtn(i, false, i === cur, () => fetchFunc(i));
     addBtn('&gt;', cur >= total, false, () => fetchFunc(cur + 1));
 }
 
-/* --------------------------------------------------------------------------
-   10. KHỞI CHẠY HỆ THỐNG KHI TẢI TRANG (BOOTSTRAP)
-   -------------------------------------------------------------------------- */
+// Khởi chạy hệ thống
 checkAuth();
 fetchDevices();
 fetchSensorData();
-// Tự động cập nhật dữ liệu cảm biến mỗi 3 giây
 setInterval(fetchSensorData, 3000);
